@@ -1,33 +1,9 @@
-# admin
+# VuePressAdmin
 
+**该项目目前还处于早期开发阶段。**
 
+[![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
 
-## QuickStart
+用类似WordPress的方式管理你的VuePress站点！
 
-<!-- add docs here for user -->
-
-see [egg docs][egg] for more detail.
-
-### Development
-
-```bash
-$ npm i
-$ npm run dev
-$ open http://localhost:7001/
-```
-
-### Deploy
-
-```bash
-$ npm start
-$ npm stop
-```
-
-### npm scripts
-
-- Use `npm run lint` to check code style.
-- Use `npm test` to run unit test.
-- Use `npm run autod` to auto detect dependencies upgrade, see [autod](https://www.npmjs.com/package/autod) for more detail.
-
-
-[egg]: https://eggjs.org
+VuePressAdmin允许你方便地管理VuePress的配置、发布和管理文章，后续还将支持一键发布至多平台、允许多作者等功能。

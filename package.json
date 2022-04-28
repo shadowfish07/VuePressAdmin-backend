@@ -40,7 +40,8 @@
     "cov": "egg-bin cov",
     "lint": "eslint .",
     "ci": "npm run lint && npm run cov",
-    "autod": "autod"
+    "autod": "autod",
+    "commit": "git add . && cz"
   },
   "ci": {
     "version": "10"
