@@ -37,3 +37,6 @@ jobs:
 
     - name: Code Coverage
       run: npm run ci
+
+    - name: Upload Coverage Report To Codecov
+      uses: codecov/codecov-action@v2
