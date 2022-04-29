@@ -3,6 +3,9 @@
 const { app, assert } = require('egg-mock/bootstrap');
 
 describe('test/app/controller/cookie.test.js', () => {
+  beforeEach(async () => {
+    await require('../../util/init')();
+  });
   describe('GET /api/cookie', () => {
     it('should fail when no param is sent', async () => {
       const result = await app.httpRequest().get('/api/cookie');

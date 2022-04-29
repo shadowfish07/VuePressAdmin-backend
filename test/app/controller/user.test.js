@@ -5,6 +5,7 @@ const { app, assert } = require('egg-mock/bootstrap');
 describe('test/app/controller/user.test.js', () => {
   let cookies;
   before(async () => {
+    await require('../../util/init')();
     const result = await app
       .httpRequest()
       .get('/api/cookie?username=admin&password=admin');
