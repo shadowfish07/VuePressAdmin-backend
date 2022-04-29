@@ -37,4 +37,4 @@ jobs:
       run: npm install
 
     - name: Code Coverage
-      uses: npm ci
+      run: npm ci
