@@ -1,5 +1,10 @@
 'use strict';
 module.exports = {
+  /**
+   * 启动新线程执行异步shell任务
+   * @param shellTaskFilename {string} shell任务文件名，文件名应是app/shell/目录下的文件，不包含路径名
+   * @returns {Promise<void>}
+   */
   async startShellTask(shellTaskFilename) {
     const fs = require('fs');
     const dayjs = require('dayjs');
@@ -60,6 +65,11 @@ module.exports = {
       this.logger.info(`[${taskId}] 日志文件已删除`);
     });
 
+    /**
+     * 获取shell任务名称
+     * @param shellTaskFilename  {string} shell任务文件名，文件名应是app/shell/目录下的文件，不包含路径名
+     * @returns {string} shell任务名称
+     */
     function getTaskName(shellTaskFilename) {
       switch (shellTaskFilename) {
         case 'initGitRepository':
