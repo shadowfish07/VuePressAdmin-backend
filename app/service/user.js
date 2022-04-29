@@ -8,9 +8,10 @@ class UserService extends Service {
         username,
         password,
       },
+      attributes: { exclude: ['password'] },
     });
     if (!user) {
-      return this.ctx.response.returnFail('用户名或密码错误');
+      return this.ctx.response.returnFail('用户名或密码错误', 400);
     }
     this.ctx.session.userId = user.id;
     return this.ctx.response.returnSuccess(user);

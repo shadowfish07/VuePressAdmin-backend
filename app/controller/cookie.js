@@ -2,16 +2,14 @@
 
 const Controller = require('egg').Controller;
 
-const loginRule = {
-  username: { type: 'string' },
-  password: { type: 'string' },
-};
-
 class CookieController extends Controller {
   async getCookie() {
     const { ctx } = this;
-    ctx.validate(loginRule);
-    await ctx.service.user.login(ctx.request.body);
+    if (!ctx.request.query.username || !ctx.request.query.password) {
+      ctx.logger.info('缺少必须参数');
+      return ctx.response.returnFail('请求参数错误', 422);
+    }
+    await ctx.service.user.login(ctx.request.query);
   }
 }
 

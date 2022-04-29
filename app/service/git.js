@@ -14,9 +14,9 @@ class GitService extends Service {
 
     const fs = require('fs');
 
-    if (!fs.existsSync('vuepress')) {
+    if (!fs.existsSync('./vuepress')) {
       this.ctx.logger.info('创建vuepress目录');
-      fs.mkdirSync('vuepress');
+      fs.mkdirSync('./vuepress');
     }
 
     await this.ctx.startShellTask('initGitRepository');

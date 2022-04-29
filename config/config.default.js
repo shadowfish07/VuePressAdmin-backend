@@ -21,7 +21,10 @@ module.exports = (appInfo) => {
 
   config.auth = {
     ignore(ctx) {
-      if (ctx.request.url === '/api/cookie' && ctx.request.method === 'GET') {
+      if (
+        ctx.request.url.startsWith('/api/cookie') &&
+        ctx.request.method === 'GET'
+      ) {
         return true;
       }
       return false;

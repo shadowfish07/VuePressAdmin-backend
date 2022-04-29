@@ -5,7 +5,7 @@ module.exports = () => {
     const id = ctx.session.userId;
     if (!id) {
       ctx.logger.info('Unauthorized.cookies-id is null.');
-      return ctx.response.returnFail('用户未登录');
+      return ctx.response.returnFail('用户未登录', 401);
     }
     await next();
   };
