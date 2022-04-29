@@ -3,6 +3,10 @@
   "rules": {
     "array-bracket-spacing": "off",
     "arrow-parens": "off",
-    "space-before-function-paren": "off"
+    "space-before-function-paren": "off",
+    "jsdoc/require-returns-description": "off",
+    "jsdoc/require-param-type": "off",
+    "jsdoc/check-tag-names": "off",
+    "jsdoc/check-param-names": "off"
   }
 }
