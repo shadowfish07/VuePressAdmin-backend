@@ -29,16 +29,19 @@ Object.entries(models).forEach(([key, value]) => {
 });
 
 // 执行数据库初始化
+const args = process.argv.slice(2);
+if (args[0] === 'force') {
+  doInit(true);
+} else {
+  doInit(false);
+}
 
-doInit();
-
-async function doInit() {
+async function doInit(force) {
   if (!fs.existsSync(databasePath)) {
     console.log('database not found, creating...');
     await initDatabase();
   } else {
-    const args = process.argv.slice(2);
-    if (args[0] === 'force') {
+    if (force) {
       console.log('database found, force to recreate...');
       await initDatabase(true);
     } else {
@@ -68,3 +71,5 @@ async function doInit() {
     console.log('database created');
   }
 }
+
+module.exports = doInit;
