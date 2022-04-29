@@ -39,4 +39,5 @@ jobs:
       run: npm run ci
 
     - name: Upload Coverage Report To Codecov
+      if: matrix.os == "ubuntu-latest"
       uses: codecov/codecov-action@v2
