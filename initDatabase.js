@@ -55,7 +55,7 @@ async function doInit(force) {
     await sequelize.sync({ force });
     console.log('database synced');
 
-    await models.Config.create({ key: 'hasInit', value: 'false' });
+    await models.Config.create({ key: 'hasInit', value: 0 });
 
     console.log('Config 表初始化完成');
 
