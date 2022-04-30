@@ -20,6 +20,7 @@ class UserService extends Service {
       return this.ctx.response.returnFail('用户名或密码错误', 400);
     }
     this.ctx.session.userId = user.id;
+    this.ctx.session.role = user.role;
     return this.ctx.response.returnSuccess(user);
   }
 
