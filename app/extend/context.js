@@ -14,6 +14,7 @@ module.exports = {
     const RUNNING = 1;
     const FINISHED = 2;
     const FAILED = 3;
+    let isFailed = false;
 
     const task = await this.model.ShellTask.create({
       taskId,
@@ -33,7 +34,7 @@ module.exports = {
         `[${dayjs().format('YYYY-MM-DD HH:mm:SSS')}] ${msg}`,
         'utf8'
       );
-      await task.update({ state: FAILED });
+      isFailed = true;
     });
     forked.stdout.on('data', (data) => {
       writerStream.write(
@@ -56,7 +57,7 @@ module.exports = {
       this.logger.info(`[${taskId}] shell 任务结束`);
 
       await task.update({
-        state: FINISHED,
+        state: isFailed ? FAILED : FINISHED,
         log: fs.readFileSync(shellOutputPath, 'utf8'),
       });
       this.logger.info(`[${taskId}] 日志已写入数据库并更新任务状态`);
@@ -74,6 +75,8 @@ module.exports = {
       switch (shellTaskFilename) {
         case 'initGitRepository':
           return '初始化git仓库';
+        case 'initRecoXTemplate':
+          return '使用模板VuePressTemplate-recoX初始化VuePress';
         default:
           return shellTaskFilename;
       }
