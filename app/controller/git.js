@@ -2,10 +2,6 @@
 
 const Controller = require('egg').Controller;
 
-class GitController extends Controller {
-  async initRepository() {
-    await this.ctx.service.git.initRepository();
-  }
-}
+class GitController extends Controller {}
 
 module.exports = GitController;

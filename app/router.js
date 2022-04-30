@@ -13,6 +13,4 @@ module.exports = (app) => {
   router.patch('/api/config', controller.config.patch);
 
   // router.resources("users", "/api/users", controller.users);
-
-  router.post('/api/git/repository/init', controller.git.initRepository);
 };
