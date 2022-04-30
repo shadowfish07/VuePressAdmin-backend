@@ -20,4 +20,25 @@ module.exports = {
       await model.create(updateValue);
     }
   },
+
+  /**
+   * 把任意值转换为boolean值，只支持true/false、1/0、'true'/'false'、'1'/'0'
+   * @param value {any} 任意值
+   * @throws {Error} 当传入的值不是支持的boolean值时，抛出错误
+   * @returns {boolean}
+   */
+  transferToBoolean(value) {
+    if (value === 'true') {
+      return true;
+    } else if (value === 'false') {
+      return false;
+    } else if (value === '1') {
+      return true;
+    } else if (value === '0') {
+      return false;
+    } else if (typeof value === 'string') {
+      throw new Error('不支持的字符串值');
+    }
+    return !!value;
+  },
 };
