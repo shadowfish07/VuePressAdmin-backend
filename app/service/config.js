@@ -56,7 +56,9 @@ class ConfigService extends Service {
    * @returns {Promise<boolean>} 是否已初始化
    */
   async hasSiteInit() {
-    const config = await this.ctx.model.Config.findOne({ key: 'hasInit' });
+    const config = await this.ctx.model.Config.findOne({
+      where: { key: 'hasInit' },
+    });
     return this.ctx.helper.transferToBoolean(config.value);
   }
 
