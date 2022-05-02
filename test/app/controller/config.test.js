@@ -1,15 +1,15 @@
 'use strict';
 
 const { app, assert } = require('egg-mock/bootstrap');
+const { mockAdminUserSession } = require('../../util/utils');
 
 describe('test/app/controller/config.test.js', () => {
-  let cookies;
   before(async () => {
     await require('../../util/init')();
-    const result = await app
-      .httpRequest()
-      .get('/api/cookie?username=admin&password=admin');
-    cookies = result.header['set-cookie'][0];
+  });
+
+  beforeEach(() => {
+    mockAdminUserSession(app);
   });
 
   afterEach(async () => {
@@ -24,8 +24,7 @@ describe('test/app/controller/config.test.js', () => {
         .set('content-type', 'application/json')
         .send({
           hasInit: true,
-        })
-        .set('Cookie', cookies);
+        });
 
       assert(result.statusCode === 200);
 
@@ -45,8 +44,7 @@ describe('test/app/controller/config.test.js', () => {
           .set('content-type', 'application/json')
           .send({
             hasInit: value,
-          })
-          .set('Cookie', cookies);
+          });
 
         assert(result.statusCode === (success ? 200 : 400));
 
@@ -86,8 +84,7 @@ describe('test/app/controller/config.test.js', () => {
         .send({
           newKey: "i'm value",
           anotherKey: 'another value',
-        })
-        .set('Cookie', cookies);
+        });
 
       assert(result.statusCode === 200);
 
@@ -116,8 +113,7 @@ describe('test/app/controller/config.test.js', () => {
         .send({
           newKey: 'new value',
           anotherKey: 'another new value',
-        })
-        .set('Cookie', cookies);
+        });
 
       assert(result.statusCode === 200);
 

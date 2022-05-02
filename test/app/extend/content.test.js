@@ -5,19 +5,21 @@ const { assert, app } = require('egg-mock/bootstrap');
 const sinon = require('sinon');
 const FakeChildProcess = require('../../util/FakeChildProcess');
 const FakeReadableStream = require('../../util/FakeReadableStream');
+const { mockAdminUserSession } = require('../../util/utils');
 
 describe('startShellTask()', () => {
   const RUNNING = 1;
   const FINISHED = 2;
   const FAILED = 3;
+  beforeEach(() => {
+    mockAdminUserSession(app);
+  });
   afterEach(() => {
     sinon.restore();
   });
   it('should success when no error occurs', async () => {
     const ctx = app.mockContext();
-    app.mockSession({
-      userId: 1,
-    });
+
     const childProcess = require('child_process');
     const fakeChildProcess = new FakeChildProcess();
 
@@ -68,9 +70,6 @@ describe('startShellTask()', () => {
   });
   it('should success when error occurs', async () => {
     const ctx = app.mockContext();
-    app.mockSession({
-      userId: 1,
-    });
     const childProcess = require('child_process');
     const fakeChildProcess = new FakeChildProcess();
 
