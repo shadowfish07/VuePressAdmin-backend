@@ -37,6 +37,46 @@ describe('test/app/controller/config.test.js', () => {
       assert(config.value === '1');
     });
 
+    it('should success when edit key that need boolean value', async () => {
+      async function sendAndTest(value, success) {
+        const result = await app
+          .httpRequest()
+          .patch('/api/config')
+          .set('content-type', 'application/json')
+          .send({
+            hasInit: value,
+          })
+          .set('Cookie', cookies);
+
+        assert(result.statusCode === (success ? 200 : 400));
+
+        if (!success) {
+          return;
+        }
+
+        const config = await app.model.Config.findOne({
+          where: {
+            key: 'hasInit',
+          },
+        });
+        assert(
+          config.value === app.mockContext().helper.transferToBoolean(value)
+            ? '1'
+            : '0'
+        );
+      }
+
+      await sendAndTest(true, true);
+      await sendAndTest(false, true);
+      await sendAndTest(1, true);
+      await sendAndTest(0, true);
+      await sendAndTest('1', true);
+      await sendAndTest('0', true);
+      await sendAndTest('true', true);
+      await sendAndTest('false', true);
+      await sendAndTest('yes', false);
+    });
+
     it('should success when add new key and change them', async () => {
       const { Op } = app.Sequelize;
       let result = await app
