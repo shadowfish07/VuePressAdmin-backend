@@ -53,9 +53,16 @@ describe('startShellTask()', () => {
       fakeChildProcess.emitStdout('end');
     });
 
+    let waitTimes = 0;
     await new Promise((resolve) => {
-      setTimeout(() => {
-        resolve();
+      const timer = setInterval(async () => {
+        await task.reload();
+        if (task.state !== RUNNING || waitTimes > 20) {
+          clearInterval(timer);
+          resolve();
+        } else {
+          waitTimes++;
+        }
       }, 100);
     });
 
