@@ -5,5 +5,5 @@ exports.sequelize = {
 };
 
 exports.vuepress = {
-  path: '/vuepress-test',
+  path: process.cwd() + '/vuepress-test',
 };

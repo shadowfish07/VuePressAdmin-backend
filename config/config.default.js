@@ -32,7 +32,7 @@ module.exports = (appInfo) => {
   };
 
   config.vuepress = {
-    path: '/vuepress',
+    path: process.cwd() + '/vuepress',
   };
 
   config.security = {
