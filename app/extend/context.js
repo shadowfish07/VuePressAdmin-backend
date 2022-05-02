@@ -29,9 +29,13 @@ module.exports = {
     );
     const { fork } = require('child_process');
 
-    const forked = fork(`app/shell/${shellTaskFilename}.js`, [taskId], {
-      silent: true,
-    });
+    const forked = fork(
+      `app/shell/${shellTaskFilename}.js`,
+      [taskId, this.app.config.vuepress.path],
+      {
+        silent: true,
+      }
+    );
     forked.on('message', async ({ msg }) => {
       this.logger.error(`{${taskId}} 执行shell子线程时出现异常：${msg}`);
       writerStream.write(

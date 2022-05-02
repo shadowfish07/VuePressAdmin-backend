@@ -31,6 +31,10 @@ module.exports = (appInfo) => {
     },
   };
 
+  config.vuepress = {
+    path: '/vuepress',
+  };
+
   config.security = {
     csrf: {
       enable: false,
