@@ -11,6 +11,7 @@ module.exports = (app) => {
   // router.resources("config", "/api/config", controller.config);
 
   router.patch('/api/config', controller.config.patch);
+  router.post('/api/config/init', controller.config.initSite);
 
   // router.resources("users", "/api/users", controller.users);
 };

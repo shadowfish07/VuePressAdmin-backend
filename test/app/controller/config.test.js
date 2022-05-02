@@ -2,6 +2,9 @@
 
 const { app, assert } = require('egg-mock/bootstrap');
 const { mockAdminUserSession } = require('../../util/utils');
+const sinon = require('sinon');
+const childProcess = require('child_process');
+const FakeChildProcess = require('../../util/FakeChildProcess');
 
 describe('test/app/controller/config.test.js', () => {
   before(async () => {
@@ -132,6 +135,176 @@ describe('test/app/controller/config.test.js', () => {
         config.find((item) => item.key === 'anotherKey').value ===
           'another new value'
       );
+    });
+  });
+
+  describe('POST /api/config/init', () => {
+    const RUNNING = 1;
+    beforeEach(() => {
+      const fakeChildProcess = new FakeChildProcess();
+      sinon.mock(childProcess).expects('fork').returns(fakeChildProcess);
+    });
+    afterEach(() => {
+      sinon.restore();
+      const fs = require('fs');
+      if (fs.existsSync(app.config.vuepress.path)) {
+        fs.rmdirSync(app.config.vuepress.path);
+      }
+    });
+    it('should success when site is not init and not using remote repo', async () => {
+      const siteName = 'test';
+      const gitPlatform = 'none';
+      const vuePressTemplate = 'VuePressTemplate-recoX';
+      const result = await app
+        .httpRequest()
+        .post('/api/config/init')
+        .set('content-type', 'application/json')
+        .send({
+          siteName,
+          gitPlatform,
+          vuePressTemplate,
+        });
+
+      assert(result.statusCode === 200);
+      assert(result.body.success);
+      assert(result.body.data);
+
+      const task = await app.model.ShellTask.findOne({
+        where: {
+          taskId: result.body.data,
+        },
+      });
+      assert(result.body.data);
+      assert(task.state === RUNNING);
+      assert(task.userId === 1);
+      assert(task.taskName === '使用模板VuePressTemplate-recoX初始化VuePress');
+
+      const hasInit = await app.model.Config.findOne({
+        where: {
+          key: 'hasInit',
+        },
+      });
+      assert(hasInit.value === '1');
+
+      const dbSiteName = await app.model.Config.findOne({
+        where: {
+          key: 'siteName',
+        },
+      });
+      assert(dbSiteName.value === siteName);
+
+      const dbGitPlatform = await app.model.Config.findOne({
+        where: {
+          key: 'gitPlatform',
+        },
+      });
+      assert(dbGitPlatform.value === gitPlatform);
+
+      const dbVuePressTemplate = await app.model.Config.findOne({
+        where: {
+          key: 'vuePressTemplate',
+        },
+      });
+      assert(dbVuePressTemplate.value === vuePressTemplate);
+    });
+    it('should fail when site is init', async () => {
+      await app.model.Config.update(
+        {
+          value: 1,
+        },
+        {
+          where: {
+            key: 'hasInit',
+          },
+        }
+      );
+      const siteName = 'test';
+      const gitPlatform = 'none';
+      const vuePressTemplate = 'VuePressTemplate-recoX';
+      const result = await app
+        .httpRequest()
+        .post('/api/config/init')
+        .set('content-type', 'application/json')
+        .send({
+          siteName,
+          gitPlatform,
+          vuePressTemplate,
+        });
+
+      assert(result.statusCode === 403);
+      assert(result.body.success === false);
+      assert(result.body.errorMessage === '站点已经初始化');
+    });
+    it('should fail when vuepress dir is exist', async () => {
+      const fs = require('fs');
+      fs.mkdirSync(app.config.vuepress.path);
+      const siteName = 'test';
+      const gitPlatform = 'none';
+      const vuePressTemplate = 'VuePressTemplate-recoX';
+      const result = await app
+        .httpRequest()
+        .post('/api/config/init')
+        .set('content-type', 'application/json')
+        .send({
+          siteName,
+          gitPlatform,
+          vuePressTemplate,
+        });
+
+      assert(result.statusCode === 403);
+      assert(result.body.success === false);
+      assert(result.body.errorMessage === '已存在vuepress目录，拒绝执行初始化');
+    });
+    it('should fail when gitPlatform is not support', async () => {
+      const siteName = 'test';
+      const gitPlatform = 'notSupport';
+      const vuePressTemplate = 'VuePressTemplate-recoX';
+      const result = await app
+        .httpRequest()
+        .post('/api/config/init')
+        .set('content-type', 'application/json')
+        .send({
+          siteName,
+          gitPlatform,
+          vuePressTemplate,
+        });
+
+      assert(result.statusCode === 422);
+      assert(result.body.success === false);
+    });
+    it('should fail when vuepress template is not support', async () => {
+      const siteName = 'test';
+      const gitPlatform = 'none';
+      const vuePressTemplate = 'notSupport';
+      const result = await app
+        .httpRequest()
+        .post('/api/config/init')
+        .set('content-type', 'application/json')
+        .send({
+          siteName,
+          gitPlatform,
+          vuePressTemplate,
+        });
+
+      assert(result.statusCode === 422);
+      assert(result.body.success === false);
+    });
+    it('should fail when siteName is empty', async () => {
+      const siteName = '';
+      const gitPlatform = 'none';
+      const vuePressTemplate = 'VuePressTemplate-recoX';
+      const result = await app
+        .httpRequest()
+        .post('/api/config/init')
+        .set('content-type', 'application/json')
+        .send({
+          siteName,
+          gitPlatform,
+          vuePressTemplate,
+        });
+
+      assert(result.statusCode === 422);
+      assert(result.body.success === false);
     });
   });
 });

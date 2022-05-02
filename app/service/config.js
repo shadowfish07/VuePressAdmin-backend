@@ -8,7 +8,7 @@ class ConfigService extends Service {
    * 对于value是Boolean值的配置，则尝试执行布尔转换，统一转换为true/false，若转换失败则拒绝执行，直接返回错误信息
    * @param config {object} 键值对，键为配置项名称，值为配置项值。e.g: { 'hasInit': true, 'siteName': 'cool site' }
    * @permission admin
-   * @returns {Promise<void>}
+   * @returns {Promise<boolean>} 是否成功
    */
   async patch(config) {
     if (this.ctx.session.role !== 'admin') {
@@ -39,6 +39,8 @@ class ConfigService extends Service {
       );
     }
 
+    return true;
+
     function isBooleanValue(key) {
       switch (key) {
         case 'hasInit':
@@ -55,14 +57,14 @@ class ConfigService extends Service {
    */
   async hasSiteInit() {
     const config = await this.ctx.model.Config.findOne({ key: 'hasInit' });
-    return !!config.value;
+    return this.ctx.helper.transferToBoolean(config.value);
   }
 
   /**
    * 启动新线程异步初始化vuepress目录，若已存在vuepress则不初始化
    * @param type {string} 初始化模板类型，目前支持VuePressTemplate-recoX
    * @permission admin
-   * @returns {Promise<void>}
+   * @returns {Promise<boolean|string>} 成功则返回taskId,失败则返回false
    */
   async vuepressInit({ type }) {
     const fs = require('fs');
@@ -70,22 +72,27 @@ class ConfigService extends Service {
       this.ctx.logger.info('用户无权限执行此操作');
       return this.ctx.response.returnFail('你没有权限', 403);
     }
-    if (fs.existsSync('vuepress')) {
+    if (fs.existsSync(this.app.config.vuepress.path)) {
       this.ctx.logger.info('vuepress已存在，不初始化');
-      return this.ctx.response.returnFail('已存在vuepress目录，拒绝执行初始化');
+      return this.ctx.response.returnFail(
+        '已存在vuepress目录，拒绝执行初始化',
+        403
+      );
     }
+
+    let taskId;
 
     switch (type) {
       case 'VuePressTemplate-recoX':
         this.ctx.logger.info('执行初始化，模板：' + type);
-        await this.ctx.startShellTask('initRecoXTemplate');
+        taskId = await this.ctx.startShellTask('initRecoXTemplate');
         break;
       default:
         this.ctx.logger.warn('未知的vuepress初始化模板类型');
         return this.ctx.response.returnFail('未知的vuepress初始化模板类型');
     }
 
-    return this.ctx.response.returnSuccess();
+    return taskId;
   }
 }
 
