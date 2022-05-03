@@ -1,7 +1,7 @@
 'use strict';
 
 const { app, assert } = require('egg-mock/bootstrap');
-const { mockAdminUserSession } = require('../../util/utils');
+const { mockAdminUserSession, mockGeneralUsers } = require('../../util/utils');
 const sinon = require('sinon');
 const childProcess = require('child_process');
 const FakeChildProcess = require('../../util/FakeChildProcess');
@@ -137,6 +137,23 @@ describe('test/app/controller/config.test.js', () => {
         config.find((item) => item.key === 'anotherKey').value ===
           'another new value'
       );
+    });
+
+    it('should fail when content-type is not application/json', async () => {
+      const result = await app
+        .httpRequest()
+        .patch('/api/config')
+        .set('content-type', 'text/plain')
+        .send(
+          JSON.stringify({
+            newKey: "i'm value",
+            anotherKey: 'another value',
+          })
+        );
+
+      assert(result.statusCode === 422);
+      assert(result.body.success === false);
+      assert(result.body.errorMessage === 'content-type必须是application/json');
     });
   });
 
@@ -315,6 +332,25 @@ describe('test/app/controller/config.test.js', () => {
 
       assert(result.statusCode === 422);
       assert(result.body.success === false);
+    });
+    it('should fail when user is not admin', async () => {
+      mockGeneralUsers(app);
+      const siteName = 'test';
+      const gitPlatform = 'none';
+      const vuePressTemplate = 'VuePressTemplate-recoX';
+      const result = await app
+        .httpRequest()
+        .post('/api/config/init')
+        .set('content-type', 'application/json')
+        .send({
+          siteName,
+          gitPlatform,
+          vuePressTemplate,
+        });
+
+      assert(result.statusCode === 403);
+      assert(result.body.success === false);
+      assert(result.body.errorMessage === '你没有权限');
     });
   });
 });

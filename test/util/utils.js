@@ -6,4 +6,10 @@ module.exports = {
       role: 'admin',
     });
   },
+  mockGeneralUsers(app) {
+    app.mockSession({
+      userId: 99,
+      role: 'general',
+    });
+  },
 };
