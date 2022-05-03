@@ -31,7 +31,7 @@ module.exports = {
 
     const forked = fork(
       `app/shell/${shellTaskFilename}.js`,
-      [taskId, this.app.config.vuepress.path],
+      ['--DO-RUN--', taskId, this.app.config.vuepress.path],
       {
         silent: true,
       }
