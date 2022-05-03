@@ -31,5 +31,5 @@ jobs:
       run: npm run ci
 
     - name: Upload Coverage Report To Codecov
-      if: matrix.os == 'ubuntu-latest'
+      if: matrix.os == 'ubuntu-latest' && (github.event.pull_request.merged == true || github.ref_name == 'main')
       uses: codecov/codecov-action@v2
