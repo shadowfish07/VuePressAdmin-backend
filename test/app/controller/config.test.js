@@ -5,10 +5,12 @@ const { mockAdminUserSession } = require('../../util/utils');
 const sinon = require('sinon');
 const childProcess = require('child_process');
 const FakeChildProcess = require('../../util/FakeChildProcess');
+const shell = require('shelljs');
 
 describe('test/app/controller/config.test.js', () => {
   before(async () => {
     await require('../../util/init')();
+    shell.rm('-rf', app.config.vuepress.path);
   });
 
   beforeEach(() => {
@@ -140,8 +142,9 @@ describe('test/app/controller/config.test.js', () => {
 
   describe('POST /api/config/init', () => {
     const RUNNING = 1;
+    let fakeChildProcess;
     beforeEach(() => {
-      const fakeChildProcess = new FakeChildProcess();
+      fakeChildProcess = new FakeChildProcess();
       sinon.mock(childProcess).expects('fork').returns(fakeChildProcess);
     });
     afterEach(() => {
@@ -165,6 +168,8 @@ describe('test/app/controller/config.test.js', () => {
           vuePressTemplate,
         });
 
+      fakeChildProcess.emitStdout('end');
+
       assert(result.statusCode === 200);
       assert(result.body.success);
       assert(result.body.data);
@@ -174,6 +179,7 @@ describe('test/app/controller/config.test.js', () => {
           taskId: result.body.data,
         },
       });
+
       assert(result.body.data);
       assert(task.state === RUNNING);
       assert(task.userId === 1);
@@ -184,6 +190,7 @@ describe('test/app/controller/config.test.js', () => {
           key: 'hasInit',
         },
       });
+
       assert(hasInit.value === '1');
 
       const dbSiteName = await app.model.Config.findOne({
@@ -191,6 +198,7 @@ describe('test/app/controller/config.test.js', () => {
           key: 'siteName',
         },
       });
+
       assert(dbSiteName.value === siteName);
 
       const dbGitPlatform = await app.model.Config.findOne({
@@ -198,6 +206,7 @@ describe('test/app/controller/config.test.js', () => {
           key: 'gitPlatform',
         },
       });
+
       assert(dbGitPlatform.value === gitPlatform);
 
       const dbVuePressTemplate = await app.model.Config.findOne({
@@ -205,6 +214,7 @@ describe('test/app/controller/config.test.js', () => {
           key: 'vuePressTemplate',
         },
       });
+
       assert(dbVuePressTemplate.value === vuePressTemplate);
     });
     it('should fail when site is init', async () => {
