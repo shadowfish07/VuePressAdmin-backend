@@ -168,8 +168,6 @@ describe('test/app/controller/config.test.js', () => {
           vuePressTemplate,
         });
 
-      fakeChildProcess.emitStdout('end');
-
       assert(result.statusCode === 200);
       assert(result.body.success);
       assert(result.body.data);
@@ -184,6 +182,8 @@ describe('test/app/controller/config.test.js', () => {
       assert(task.state === RUNNING);
       assert(task.userId === 1);
       assert(task.taskName === '使用模板VuePressTemplate-recoX初始化VuePress');
+
+      fakeChildProcess.emitStdout('end');
 
       const hasInit = await app.model.Config.findOne({
         where: {
