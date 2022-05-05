@@ -1,7 +1,10 @@
 'use strict';
 
 const { app, assert } = require('egg-mock/bootstrap');
-const { mockAdminUserSession, mockGeneralUsers } = require('../../util/utils');
+const {
+  mockAdminUserSession,
+  mockGeneralUsersSession,
+} = require('../../util/utils');
 const sinon = require('sinon');
 const childProcess = require('child_process');
 const FakeChildProcess = require('../../util/FakeChildProcess');
@@ -334,7 +337,7 @@ describe('test/app/controller/config.test.js', () => {
       assert(result.body.success === false);
     });
     it('should fail when user is not admin', async () => {
-      mockGeneralUsers(app);
+      mockGeneralUsersSession(app);
       const siteName = 'test';
       const gitPlatform = 'none';
       const vuePressTemplate = 'VuePressTemplate-recoX';

@@ -6,7 +6,7 @@ module.exports = {
       role: 'admin',
     });
   },
-  mockGeneralUsers(app) {
+  mockGeneralUsersSession(app) {
     app.mockSession({
       userId: 99,
       role: 'general',
