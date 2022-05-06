@@ -1,5 +1,5 @@
 'use strict';
-if (process.argv[2] === '--DO-RUN--') shell(process.argv[2], process.argv[3]);
+if (process.argv[2] === '--DO-RUN--') shell(process.argv[3], process.argv[4]);
 
 function shell(taskId, vuepressPath) {
   const shell = require('shelljs');
@@ -16,6 +16,8 @@ function shell(taskId, vuepressPath) {
     shell.rm('-rf', `${vuepressPath}/.git`);
     shell.cd(vuepressPath);
     shell.exec('git init');
+    shell.exec('git add .');
+    shell.exec("git commit -m '初始化'");
     shell.exec('npm install --registry=https://registry.npmmirror.com');
   } catch (error) {
     process.send({ taskId, msg: error.toString() });
