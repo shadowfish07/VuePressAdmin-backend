@@ -17,7 +17,7 @@ module.exports = (appInfo) => {
     appInfo.name + '8kYnNQCeXJr3vAkKJhbyGNtvMVwj8NvqyeKPQ9HJPpQdLkP2t';
 
   // add your middleware config here
-  config.middleware = ['auth', 'errorHandler'];
+  config.middleware = ['log', 'auth', 'errorHandler'];
 
   config.auth = {
     ignore(ctx) {
