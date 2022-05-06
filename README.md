@@ -72,3 +72,7 @@ VuePressAdmin使用**codecov**提供集成化的代码覆盖率报告。
 - [用Commitizen实现优雅规范的commit风格](https://blog.shadowfish0.top/2022-04-28--gui-fan-hua-de-dai-ma-ti-jiao.html)
 
 逛GitHub的时候发现现在越来越多的库的提交风格都规范统一，特别优雅，故借此机会探索了规范提交风格方面的技术，在本项目中也会一直贯彻落实。
+
+- [聊聊Nodejs的单元测试，要怎么测试涉及子线程逻辑的代码？](https://blog.shadowfish0.top/2022-05-05-nodejs-dan-yuan-ce-shi.html)
+
+玩单元测试时的一些感受~涉及到了对sinon、proxyquire的一些探讨
