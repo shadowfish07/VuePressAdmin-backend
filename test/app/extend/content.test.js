@@ -75,6 +75,7 @@ describe('startShellTask()', () => {
 
     const fs = require('fs');
     assert(!fs.existsSync('/shellOutput/' + taskId + '.log'));
+    assert(fs.existsSync(app.config.vuepress.path));
   });
   it('should success when error occurs', async () => {
     const ctx = app.mockContext();
@@ -127,5 +128,6 @@ describe('startShellTask()', () => {
 
     const fs = require('fs');
     assert(!fs.existsSync('/shellOutput/' + taskId + '.log'));
+    assert(fs.existsSync(app.config.vuepress.path));
   });
 });
