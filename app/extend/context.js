@@ -3,9 +3,11 @@ module.exports = {
   /**
    * 启动新线程执行异步shell任务
    * @param shellTaskFilename {string} shell任务文件名，文件名应是app/shell/目录下的文件，不包含路径名
+   * @param [args] {array} shell任务执行参数
+   * @param [callback] {function} 完成最终数据库写入后执行的回调函数，传入第一个参数isFailed标记任务是否成功
    * @returns {Promise<string>} 返回taskId
    */
-  async startShellTask(shellTaskFilename) {
+  async startShellTask(shellTaskFilename, args = [], callback = null) {
     const fs = require('fs');
     const dayjs = require('dayjs');
     const { v4: uuidv4 } = require('uuid');
@@ -31,7 +33,7 @@ module.exports = {
 
     const forked = fork(
       `app/shell/${shellTaskFilename}.js`,
-      ['--DO-RUN--', taskId, this.app.config.vuepress.path],
+      ['--DO-RUN--', taskId, this.app.config.vuepress.path, ...args],
       {
         silent: true,
       }
@@ -76,6 +78,10 @@ module.exports = {
           fs.unlinkSync(shellOutputPath);
           this.logger.info(`[${taskId}] 日志文件已删除`);
         }
+
+        if (callback) {
+          callback(isFailed);
+        }
       });
     });
 
@@ -89,6 +95,8 @@ module.exports = {
       switch (shellTaskFilename) {
         case 'initRecoXTemplate':
           return '使用模板VuePressTemplate-recoX初始化VuePress';
+        case 'commitArticle':
+          return 'git commit 文章';
         default:
           return shellTaskFilename;
       }

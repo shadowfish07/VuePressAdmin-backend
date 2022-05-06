@@ -13,5 +13,7 @@ module.exports = (app) => {
   router.patch('/api/config', controller.config.patch);
   router.post('/api/config/init', controller.config.initSite);
 
+  router.resources('article', '/api/article', controller.article);
+
   // router.resources("users", "/api/users", controller.users);
 };

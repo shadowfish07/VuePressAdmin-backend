@@ -1,14 +1,19 @@
 'use strict';
+const adminUserId = 1;
+const generalUserId = 2;
+
 module.exports = {
+  adminUserId,
+  generalUserId,
   mockAdminUserSession(app) {
     app.mockSession({
-      userId: 1,
+      userId: adminUserId,
       role: 'admin',
     });
   },
   mockGeneralUsersSession(app) {
     app.mockSession({
-      userId: 99,
+      userId: generalUserId,
       role: 'general',
     });
   },
