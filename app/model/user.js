@@ -22,6 +22,7 @@ module.exports = (app) => {
     }
 
     app.model.User.hasMany(app.model.ShellTask);
+    app.model.User.hasMany(app.model.Article);
   };
 
   return User;

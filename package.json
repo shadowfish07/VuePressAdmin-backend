@@ -13,6 +13,8 @@
     "egg-sequelize": "^6.0.0",
     "egg-tracer": "^1.1.0",
     "egg-validate": "^2.0.2",
+    "fs-extra": "^10.1.0",
+    "git-parse": "^2.1.1",
     "shelljs": "^0.8.5",
     "sinon": "^13.0.2",
     "sqlite3": "^5.0.4",

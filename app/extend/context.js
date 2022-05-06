@@ -95,6 +95,8 @@ module.exports = {
       switch (shellTaskFilename) {
         case 'initRecoXTemplate':
           return '使用模板VuePressTemplate-recoX初始化VuePress';
+        case 'commitArticle':
+          return 'git commit 文章';
         default:
           return shellTaskFilename;
       }
