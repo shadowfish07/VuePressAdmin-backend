@@ -35,6 +35,7 @@ module.exports = {
       success,
       data: data || null,
       errorMessage: errorMessage || '',
+      traceId: this.ctx.traceId,
     };
   },
 };
