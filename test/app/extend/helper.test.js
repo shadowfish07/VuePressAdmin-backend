@@ -1,6 +1,7 @@
 'use strict';
 
 const { app, assert } = require('egg-mock/bootstrap');
+const sinon = require('sinon');
 
 describe('transferToBoolean()', () => {
   it("should return true when transfer 'true'", () => {
@@ -87,5 +88,118 @@ describe('transferToBoolean()', () => {
   it("should return true when transfer '-0.1'", () => {
     const result = app.mockContext().helper.transferToBoolean(-0.1);
     assert(result === true);
+  });
+});
+
+describe('getAvailableFilePath', () => {
+  afterEach(() => {
+    sinon.restore();
+  });
+  it('should return a available file path when origin path is occupied', () => {
+    const fs = require('fs');
+    const documentRoot = '/fakePath/';
+    const originFilename = 'fakeFilename';
+    const suffix = '.md';
+    sinon
+      .stub(fs, 'existsSync')
+      .withArgs(`${documentRoot}${originFilename}${suffix}`)
+      .returns(true);
+
+    const result = app
+      .mockContext()
+      .helper.getAvailableFilePath(documentRoot, originFilename, suffix);
+
+    assert(result === `${documentRoot}${originFilename}_1${suffix}`);
+  });
+  it('should return origin file path when origin path is not occupied', () => {
+    const fs = require('fs');
+    const documentRoot = '/fakePath/';
+    const originFilename = 'fakeFilename';
+    const suffix = '.md';
+    sinon
+      .stub(fs, 'existsSync')
+      .withArgs(`${documentRoot}${originFilename}${suffix}`)
+      .returns(false);
+
+    const result = app
+      .mockContext()
+      .helper.getAvailableFilePath(documentRoot, originFilename, suffix);
+
+    assert(result === `${documentRoot}${originFilename}${suffix}`);
+  });
+  it('should return a available file path when origin path is occupied and need more counts', () => {
+    const fs = require('fs');
+    const documentRoot = '/fakePath/';
+    const originFilename = 'fakeFilename';
+    const suffix = '.md';
+    const stub = sinon.stub(fs, 'existsSync');
+
+    stub.withArgs(`${documentRoot}${originFilename}${suffix}`).returns(true);
+
+    stub
+      .withArgs(`${documentRoot}${originFilename}_1${suffix}`)
+      .returns(true);
+
+    stub
+      .withArgs(`${documentRoot}${originFilename}_2${suffix}`)
+      .returns(true);
+
+    const result = app
+      .mockContext()
+      .helper.getAvailableFilePath(documentRoot, originFilename, suffix);
+
+    assert(result === `${documentRoot}${originFilename}_3${suffix}`);
+  });
+  it('should return origin file path when documentRoot is not end with "/" and origin path is not occupied', () => {
+    const fs = require('fs');
+    const documentRoot = '/fakePath';
+    const originFilename = 'fakeFilename';
+    const suffix = '.md';
+    sinon
+      .stub(fs, 'existsSync')
+      .withArgs(`${documentRoot}/${originFilename}${suffix}`)
+      .returns(false);
+
+    const result = app
+      .mockContext()
+      .helper.getAvailableFilePath(documentRoot, originFilename, suffix);
+
+    assert(result === `${documentRoot}/${originFilename}${suffix}`);
+  });
+  it('should return origin file path when originFilename is start with "/" and origin path is not occupied', () => {
+    const fs = require('fs');
+    const documentRoot = '/fakePath/';
+    const originFilename = 'fakeFilename';
+    const suffix = '.md';
+    sinon
+      .stub(fs, 'existsSync')
+      .withArgs(`${documentRoot}${originFilename}${suffix}`)
+      .returns(false);
+
+    const result = app
+      .mockContext()
+      .helper.getAvailableFilePath(documentRoot, '/' + originFilename, suffix);
+
+    assert(result === `${documentRoot}${originFilename}${suffix}`);
+  });
+  it('should return origin file path when documentRoot is start with multiple "/" and origin path is not occupied', () => {
+    const fs = require('fs');
+    const documentRoot = '/fakePath/';
+    const originFilename = 'fakeFilename';
+    const suffix = '.md';
+    sinon
+      .stub(fs, 'existsSync')
+      .withArgs(`${documentRoot}${originFilename}${suffix}`)
+      .returns(false);
+
+    const result = app
+      .mockContext()
+      .helper.getAvailableFilePath(
+        documentRoot,
+        '////' + originFilename,
+        suffix
+      );
+
+    assert(result === `${documentRoot}${originFilename}${suffix}`);
   });
 });
