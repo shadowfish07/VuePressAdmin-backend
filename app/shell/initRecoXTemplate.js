@@ -13,8 +13,9 @@ function shell(taskId, vuepressPath) {
     shell.exec(
       `git clone --progress https://github.com/shadowfish07/VuePressTemplate-recoX.git --depth=1 ${vuepressPath}`
     );
+    shell.rm('-rf', `${vuepressPath}/.git`);
     shell.cd(vuepressPath);
-    shell.exec('git remote rm origin ');
+    shell.exec('git init');
     shell.exec('npm install --registry=https://registry.npmmirror.com');
   } catch (error) {
     process.send({ taskId, msg: error.toString() });
