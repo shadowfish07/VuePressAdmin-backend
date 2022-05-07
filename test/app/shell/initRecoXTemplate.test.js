@@ -17,7 +17,7 @@ describe('initRecoXTemplate', () => {
     let retryTimes = 0;
     await new Promise((resolve) => {
       const timer = setInterval(() => {
-        if (retryTimes > 10 || !fs.existsSync(app.config.vuepress.path)) {
+        if (retryTimes > 2 || !fs.existsSync(app.config.vuepress.path)) {
           clearInterval(timer);
           resolve();
         }

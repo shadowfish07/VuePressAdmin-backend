@@ -12,10 +12,12 @@ const path = require('path');
 const shelljs = require('shelljs');
 const { gitToJs } = require('git-parse');
 const dayjs = require('dayjs');
+const fse = require('fs-extra');
 
 describe('test/app/controller/article.test.js', () => {
   before(async () => {
     await require('../../util/init')();
+    fse.removeSync(app.config.vuepress.path);
     fs.mkdirSync(app.config.vuepress.path);
     shelljs.exec('git init ' + app.config.vuepress.path);
     shelljs.exec(
