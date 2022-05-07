@@ -1,6 +1,5 @@
 'use strict';
 const Service = require('egg').Service;
-const fs = require('fs');
 const dayjs = require('dayjs');
 
 class ArticleService extends Service {
@@ -36,7 +35,6 @@ class ArticleService extends Service {
      * @returns {Promise<string>} 文件路径
      */
     async function createNewFile(title) {
-      const path = require('path');
       const documentRoot = this.app.config.vuepress.draftFullPath;
       const suffix = '.md';
       const filePath = ctx.helper.getAvailableFilePath(
@@ -44,15 +42,14 @@ class ArticleService extends Service {
         title,
         suffix
       );
-      let template = fs.readFileSync(
-        path.join(process.cwd(), 'templates', 'newArticleTemplate.md'),
-        'utf-8'
-      );
-      template = template
-        .replace('${title}', title)
-        .replace('${date}', dayjs().format('YYYY-MM-DD'));
       const fse = require('fs-extra');
-      fse.outputFile(filePath, template);
+
+      const frontMatter = {
+        title,
+        date: dayjs().format('YYYY-MM-DD'),
+      };
+      const content = '---\n' + JSON.stringify(frontMatter) + '\n---\n\n';
+      fse.outputFile(filePath, content);
 
       return filePath;
     }
