@@ -1,4 +1,7 @@
 {
+  "parserOptions": {
+    "ecmaVersion": 2020
+  },
   "extends": "eslint-config-egg",
   "rules": {
     "array-bracket-spacing": "off",

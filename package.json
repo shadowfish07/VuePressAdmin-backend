@@ -27,7 +27,7 @@
     "egg-bin": "^4.11.0",
     "egg-ci": "^1.11.0",
     "egg-mock": "^3.21.0",
-    "eslint": "^5.13.0",
+    "eslint": "^7.5.0",
     "eslint-config-egg": "^7.1.0",
     "prettier": "2.6.2",
     "proxyquire": "^2.1.3"
