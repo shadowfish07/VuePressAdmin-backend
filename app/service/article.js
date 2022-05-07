@@ -66,8 +66,6 @@ class ArticleService extends Service {
       const { id } = await this.app.model.Article.create({
         title,
         filePath,
-        readCount: 0,
-        lastModifiedAt: dayjs().utc(),
         userId: ctx.userId,
         isDraft: 1,
       });
