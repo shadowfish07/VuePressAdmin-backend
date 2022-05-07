@@ -124,7 +124,7 @@ module.exports = {
       });
       forked.stdout.on('end', async () => {
         writerStream.end(
-          `[${dayjs().format('YYYY-MM-DD HH:mm:SSS')}] Shell Finished`,
+          `\n[${dayjs().format('YYYY-MM-DD HH:mm:SSS')}] Shell Finished`,
           'utf8'
         );
         const timeConsumed = dayjs().diff(startTime);

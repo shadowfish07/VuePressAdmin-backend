@@ -77,10 +77,13 @@ describe('test/app/controller/article.test.js', () => {
         'utf-8'
       );
 
-      assert(
-        file.replace(/\n/g, '').replace(/\r/g, '') ===
-          `---title: ${title}  date: ${dayjs().format('YYYY-MM-DD')}  ---`
-      );
+      const frontMatter = {
+        title,
+        date: dayjs().format('YYYY-MM-DD'),
+      };
+      const content = '---\n' + JSON.stringify(frontMatter) + '\n---\n\n';
+
+      assert(file === content);
 
       // 检查git
       const commitsPromise = await gitToJs(app.config.vuepress.path);
@@ -127,10 +130,13 @@ describe('test/app/controller/article.test.js', () => {
         'utf-8'
       );
 
-      assert(
-        file.replace(/\n/g, '').replace(/\r/g, '') ===
-          `---title: ${title}  date: ${dayjs().format('YYYY-MM-DD')}  ---`
-      );
+      const frontMatter = {
+        title,
+        date: dayjs().format('YYYY-MM-DD'),
+      };
+      const content = '---\n' + JSON.stringify(frontMatter) + '\n---\n\n';
+
+      assert(file === content);
 
       // 检查git
       const commitsPromise = await gitToJs(app.config.vuepress.path);
