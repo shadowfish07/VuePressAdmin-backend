@@ -8,6 +8,8 @@ class ArticleController extends Controller {
   /**
    * 新建文件、写入数据库、执行git commit，从而完成文章新建
    *
+   * 默认新增的文章类型是草稿
+   *
    * @api POST /article
    * @apiName 新增文章
    */

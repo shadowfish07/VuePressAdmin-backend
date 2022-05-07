@@ -68,12 +68,12 @@ describe('test/app/controller/article.test.js', () => {
       // 文件检查
       assert(
         fs.existsSync(
-          path.join(app.config.vuepress.path, 'docs', title + '.md')
+          path.join(app.config.vuepress.draftFullPath, title + '.md')
         )
       );
 
       const file = fs.readFileSync(
-        path.join(app.config.vuepress.path, 'docs', title + '.md'),
+        path.join(app.config.vuepress.draftFullPath, title + '.md'),
         'utf-8'
       );
 
@@ -92,7 +92,9 @@ describe('test/app/controller/article.test.js', () => {
       // assert(commitsPromise[0].filesAdded[0].path === 'docs/' + title + '.md');
 
       // 清理文件
-      fs.unlinkSync(path.join(app.config.vuepress.path, 'docs', title + '.md'));
+      fs.unlinkSync(
+        path.join(app.config.vuepress.draftFullPath, title + '.md')
+      );
     });
     it('should create article when general user operating', async () => {
       mockGeneralUsersSession(app);
@@ -116,12 +118,12 @@ describe('test/app/controller/article.test.js', () => {
       // 文件检查
       assert(
         fs.existsSync(
-          path.join(app.config.vuepress.path, 'docs', title + '.md')
+          path.join(app.config.vuepress.draftFullPath, title + '.md')
         )
       );
 
       const file = fs.readFileSync(
-        path.join(app.config.vuepress.path, 'docs', title + '.md'),
+        path.join(app.config.vuepress.draftFullPath, title + '.md'),
         'utf-8'
       );
 
@@ -136,10 +138,15 @@ describe('test/app/controller/article.test.js', () => {
       assert(commitsPromise.length === 1);
       assert(commitsPromise[0].message === '[docs:1] 新建文章');
       assert(commitsPromise[0].filesAdded.length === 1);
-      assert(commitsPromise[0].filesAdded[0].path === 'docs/' + title + '.md');
+      assert(
+        commitsPromise[0].filesAdded[0].path ===
+          app.config.vuepress.draftPath + '/' + title + '.md'
+      );
 
       // 清理文件
-      fs.unlinkSync(path.join(app.config.vuepress.path, 'docs', title + '.md'));
+      fs.unlinkSync(
+        path.join(app.config.vuepress.draftFullPath, title + '.md')
+      );
     });
     it('should fail when not pass title', async () => {
       mockAdminUserSession(app);
