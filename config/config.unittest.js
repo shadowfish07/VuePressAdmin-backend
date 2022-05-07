@@ -4,6 +4,12 @@ exports.sequelize = {
   storage: ':memory:',
 };
 
+const rootPath = process.cwd() + '/vuepress-test';
+
 exports.vuepress = {
-  path: process.cwd() + '/vuepress-test',
+  path: rootPath,
+  docsPath: 'docs',
+  draftPath: '_draft',
+  docsFullPath: rootPath + '/docs',
+  draftFullPath: rootPath + '/_draft',
 };

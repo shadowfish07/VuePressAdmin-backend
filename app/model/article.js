@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = (app) => {
-  const { STRING, INTEGER } = app.Sequelize;
+  const { STRING, INTEGER, DATE } = app.Sequelize;
 
   const Article = app.model.define(
     'article',
@@ -9,12 +9,14 @@ module.exports = (app) => {
       title: STRING,
       filePath: STRING,
       readCount: INTEGER,
-      lastModifiedAt: STRING,
+      lastModifiedAt: DATE,
+      isDraft: INTEGER,
     },
     {
       timestamps: true,
       updatedAt: false,
       underscored: true,
+      paranoid: true,
     }
   );
 
@@ -23,7 +25,14 @@ module.exports = (app) => {
       app.model = models;
     }
 
-    app.model.Article.belongsTo(app.model.User);
+    app.model.Article.belongsTo(app.model.User, {
+      as: 'author',
+      foreignKey: 'userId',
+    });
+    app.model.Article.belongsTo(app.model.User, {
+      as: 'deletedBy',
+      foreignKey: 'deletedById',
+    });
   };
 
   return Article;

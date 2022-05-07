@@ -31,8 +31,14 @@ module.exports = (appInfo) => {
     },
   };
 
-  config.vuepress = {
-    path: process.cwd() + '/vuepress',
+  const rootPath = process.cwd() + '/vuepress';
+
+  exports.vuepress = {
+    path: rootPath,
+    docsPath: 'docs',
+    draftPath: '_draft',
+    docsFullPath: rootPath + '/docs',
+    draftFullPath: rootPath + '/_draft',
   };
 
   config.security = {

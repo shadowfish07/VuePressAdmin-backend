@@ -7,6 +7,10 @@ class ArticleService extends Service {
   /**
    * 新建文件、写入数据库、执行git commit，从而完成文章新建
    *
+   * 默认文件名为：文章标题.md
+   *
+   * 默认新增的文章类型是草稿
+   *
    * @param title {title} 文章标题，文件名
    * @returns {Promise<number>} 文章id
    */
@@ -32,14 +36,14 @@ class ArticleService extends Service {
      * @returns {Promise<string>} 文件路径
      */
     async function createNewFile(title) {
-      const documentRoot = this.app.config.vuepress.path + '/docs';
+      const path = require('path');
+      const documentRoot = this.app.config.vuepress.draftFullPath;
       const suffix = '.md';
       const filePath = ctx.helper.getAvailableFilePath(
         documentRoot,
         title,
         suffix
       );
-      const path = require('path');
       let template = fs.readFileSync(
         path.join(process.cwd(), 'templates', 'newArticleTemplate.md'),
         'utf-8'
@@ -56,6 +60,8 @@ class ArticleService extends Service {
     /**
      * 插入数据库记录
      *
+     * 默认插入的文章状态为草稿
+     *
      * @param filePath {string} 文件路径
      * @returns {Promise<number>} 文章id
      */
@@ -64,8 +70,9 @@ class ArticleService extends Service {
         title,
         filePath,
         readCount: 0,
-        lastModifiedAt: dayjs().format('YYYY-MM-DD HH:mm:ss'),
+        lastModifiedAt: dayjs().utc(),
         userId: ctx.userId,
+        isDraft: 1,
       });
       return id;
     }
