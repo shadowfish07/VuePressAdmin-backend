@@ -80,6 +80,7 @@ describe('test/app/controller/article.test.js', () => {
       const frontMatter = {
         title,
         date: dayjs().format('YYYY-MM-DD'),
+        permalink: record.id.toString(),
       };
       const content = '---\n' + JSON.stringify(frontMatter) + '\n---\n\n';
 
@@ -133,6 +134,7 @@ describe('test/app/controller/article.test.js', () => {
       const frontMatter = {
         title,
         date: dayjs().format('YYYY-MM-DD'),
+        permalink: record.id.toString(),
       };
       const content = '---\n' + JSON.stringify(frontMatter) + '\n---\n\n';
 
