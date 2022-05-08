@@ -21,6 +21,7 @@ module.exports = (app) => {
         defaultValue: NOW,
       }, // 最后修改时间
       isDraft: INTEGER, // 是否为草稿 0: false, 1: true
+      permalink: STRING, // 文章永久链接
     },
     {
       timestamps: true,

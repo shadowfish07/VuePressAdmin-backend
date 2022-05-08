@@ -10,15 +10,19 @@ class ArticleService extends Service {
    *
    * 默认新增的文章类型是草稿
    *
-   * @param title {title} 文章标题，文件名
+   * 默认永久链接为文章id
+   *
+   * @param title {string} 文章标题，文件名
    * @returns {Promise<number>} 文章id
    */
   async createNewArticle({ title }) {
     const { ctx } = this;
 
-    const filePath = await createNewFile.call(this, title);
+    const filePath = getFilePath.call(this, title);
 
     const id = await updateDatabase.call(this, filePath);
+
+    await createNewFile.call(this, title, filePath, id);
 
     try {
       await gitCommit(filePath, id);
@@ -29,29 +33,34 @@ class ArticleService extends Service {
     return id;
 
     /**
-     * 基于模板创建文件
+     * 获取可用文件路径
      *
-     * @param title {title} 文章标题，文件名
-     * @returns {Promise<string>} 文件路径
+     * @param title {string} 文章标题
+     * @returns {string} 文件路径
      */
-    async function createNewFile(title) {
+    function getFilePath(title) {
       const documentRoot = this.app.config.vuepress.draftFullPath;
       const suffix = '.md';
-      const filePath = ctx.helper.getAvailableFilePath(
-        documentRoot,
-        title,
-        suffix
-      );
+      return ctx.helper.getAvailableFilePath(documentRoot, title, suffix);
+    }
+
+    /**
+     * 基于模板创建文件
+     *
+     * @param title {string} 文章标题，文件名
+     * @param filePath {string} 文件路径
+     * @param id {number} 文章id
+     */
+    async function createNewFile(title, filePath, id) {
       const fse = require('fs-extra');
 
       const frontMatter = {
         title,
         date: dayjs().format('YYYY-MM-DD'),
+        permalink: id.toString(),
       };
       const content = '---\n' + JSON.stringify(frontMatter) + '\n---\n\n';
       fse.outputFile(filePath, content);
-
-      return filePath;
     }
 
     /**
@@ -63,13 +72,15 @@ class ArticleService extends Service {
      * @returns {Promise<number>} 文章id
      */
     async function updateDatabase(filePath) {
-      const { id } = await this.app.model.Article.create({
+      const record = await this.app.model.Article.create({
         title,
         filePath,
         userId: ctx.userId,
         isDraft: 1,
       });
-      return id;
+      record.permalink = record.id.toString();
+      await record.save();
+      return record.id;
     }
 
     /**
