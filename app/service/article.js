@@ -1,6 +1,7 @@
 'use strict';
 const Service = require('egg').Service;
 const dayjs = require('dayjs');
+const NotExistError = require('../Error/NotExistError');
 
 class ArticleService extends Service {
   /**
@@ -105,6 +106,64 @@ class ArticleService extends Service {
         );
       });
     }
+  }
+
+  /**
+   * 更新文章内容和标题，会进行权限判断
+   *
+   * 管理员或文章原作者有权限
+   * @param id {number} 文章id
+   * @param content {string} 文章内容
+   * @param title {string} 文章标题
+   * @returns {Promise<boolean>} 是否更新成功
+   */
+  async updateContent({ id, content, title }) {
+    try {
+      if (!(await this.canUpdateContent(id))) {
+        return this.ctx.response.returnFail('无权限修改文章', 403);
+      }
+    } catch (err) {
+      if (err instanceof NotExistError) {
+        return this.ctx.response.returnFail('文章不存在', 404);
+      }
+      throw err;
+    }
+
+    const article = await this.app.model.Article.findByPk(id);
+
+    await this.app.model.ArticleHistory.create({
+      articleId: id,
+      userId: this.ctx.userId,
+      content: article.content,
+      title: article.title,
+    });
+
+    article.content = content;
+    article.title = title;
+    article.lastModifiedAt = dayjs().utc();
+
+    await article.save();
+
+    return true;
+  }
+
+  /**
+   * 检查当前用户是否有权限修改文章内容/标题
+   *
+   * 管理员或文章原作者有权限
+   *
+   * @param id {number} 文章id
+   * @returns {Promise<boolean>}
+   * @throws {NotExistError} 文章不存在
+   */
+  async canUpdateContent(id) {
+    if (this.ctx.session.role === 'admin') {
+      return true;
+    }
+
+    const article = await this.app.model.Article.findByPk(id);
+    if (!article) throw new NotExistError('文章不存在');
+    return article.userId === this.ctx.userId;
   }
 }
 
