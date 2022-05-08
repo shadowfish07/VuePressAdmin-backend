@@ -4,9 +4,6 @@ const { app, assert } = require('egg-mock/bootstrap');
 const { mockAdminUserSession } = require('../../util/utils');
 
 describe('test/app/controller/user.test.js', () => {
-  before(async () => {
-    await require('../../util/init')();
-  });
   describe('GET /api/user/me', () => {
     it('should get user info', async () => {
       mockAdminUserSession(app);

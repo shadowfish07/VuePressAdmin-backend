@@ -24,6 +24,7 @@ module.exports = (app) => {
       app.model = models;
     }
 
+    app.model.ArticleHistory.belongsTo(app.model.Article);
     app.model.ArticleHistory.belongsTo(app.model.User);
   };
 

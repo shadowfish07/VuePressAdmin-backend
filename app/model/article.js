@@ -1,5 +1,6 @@
 'use strict';
 
+const { transferToBoolean } = require('../extend/helper');
 module.exports = (app) => {
   const { STRING, INTEGER, DATE, NOW } = app.Sequelize;
 
@@ -20,7 +21,13 @@ module.exports = (app) => {
         type: DATE,
         defaultValue: NOW,
       }, // 最后修改时间
-      isDraft: INTEGER, // 是否为草稿 0: false, 1: true
+      isDraft: {
+        type: INTEGER,
+        set(value) {
+          // 强制转换为0/1
+          this.setDataValue(transferToBoolean(value) ? 1 : 0);
+        },
+      }, // 是否为草稿 0: false, 1: true
       permalink: STRING, // 文章永久链接
     },
     {
@@ -35,6 +42,8 @@ module.exports = (app) => {
     if (models) {
       app.model = models;
     }
+
+    app.model.Article.hasMany(app.model.ArticleHistory);
 
     app.model.Article.belongsTo(app.model.User, {
       as: 'author',

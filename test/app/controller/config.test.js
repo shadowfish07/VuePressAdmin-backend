@@ -12,16 +12,11 @@ const shell = require('shelljs');
 
 describe('test/app/controller/config.test.js', () => {
   before(async () => {
-    await require('../../util/init')();
     shell.rm('-rf', app.config.vuepress.path);
   });
 
   beforeEach(() => {
     mockAdminUserSession(app);
-  });
-
-  afterEach(async () => {
-    await require('../../util/init')();
   });
 
   describe('PATCH /api/config', () => {

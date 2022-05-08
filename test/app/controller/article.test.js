@@ -16,7 +16,6 @@ const fse = require('fs-extra');
 
 describe('test/app/controller/article.test.js', () => {
   before(async () => {
-    await require('../../util/init')();
     fse.removeSync(app.config.vuepress.path);
     fs.mkdirSync(app.config.vuepress.path);
     shelljs.exec('git init ' + app.config.vuepress.path);
@@ -44,7 +43,6 @@ describe('test/app/controller/article.test.js', () => {
       shelljs.exec(
         `git -C ${app.config.vuepress.path} config user.email "egg-mock@VuePressAdmin.com"`
       );
-      await require('../../util/init')();
     });
     it('should create article when admin user operating and using space in title', async () => {
       mockAdminUserSession(app);
@@ -159,6 +157,207 @@ describe('test/app/controller/article.test.js', () => {
     it('should fail when not pass title', async () => {
       mockAdminUserSession(app);
       const result = await app.httpRequest().post('/api/article').send({});
+
+      assert(result.status === 422);
+      assert(!result.body.success);
+    });
+  });
+
+  describe('PUT /api/article/:id', () => {
+    it('should update article when admin user operating and change both title and content', async () => {
+      const oldTitle = 'old title';
+      const oldContent = 'old content';
+      await app.factory.create('article', {
+        title: oldTitle,
+        content: oldContent,
+        lastModifiedAt: dayjs().subtract(1, 'year').toDate(),
+      });
+      mockAdminUserSession(app);
+      const title = 'new article';
+      const content = 'new content';
+      const result = await app.httpRequest().put('/api/article/1').send({
+        title,
+        content,
+      });
+
+      assert(result.status === 200);
+      assert(result.body.success);
+
+      // 数据库检查
+      const record = await app.model.Article.findByPk(1);
+
+      assert(record.title === title);
+      assert(record.content === content);
+      assert(
+        dayjs(record.lastModifiedAt).isAfter(dayjs().subtract(1, 'minute'))
+      );
+
+      // 编辑记录检查
+      const historyRecord = await app.model.ArticleHistory.findByPk(1);
+      assert(historyRecord.title === oldTitle);
+      assert(historyRecord.content === oldContent);
+      assert(historyRecord.userId === adminUserId);
+      assert(historyRecord.articleId === 1);
+    });
+
+    it('should update article when general user operating and change both title and content', async () => {
+      const oldTitle = 'old title';
+      const oldContent = 'old content';
+      await app.factory.create('article', {
+        title: oldTitle,
+        content: oldContent,
+        userId: generalUserId,
+        lastModifiedAt: dayjs().subtract(1, 'year').toDate(),
+      });
+      mockGeneralUsersSession(app);
+      const title = 'new article';
+      const content = 'new content';
+      const result = await app.httpRequest().put('/api/article/1').send({
+        title,
+        content,
+      });
+
+      assert(result.status === 200);
+      assert(result.body.success);
+
+      // 数据库检查
+      const record = await app.model.Article.findByPk(1);
+
+      assert(record.title === title);
+      assert(record.content === content);
+      assert(
+        dayjs(record.lastModifiedAt).isAfter(dayjs().subtract(1, 'minute'))
+      );
+
+      // 编辑记录检查
+      const historyRecord = await app.model.ArticleHistory.findByPk(1);
+      assert(historyRecord.title === oldTitle);
+      assert(historyRecord.content === oldContent);
+      assert(historyRecord.userId === generalUserId);
+      assert(historyRecord.articleId === 1);
+    });
+
+    it("should success when admin user change other user's article", async () => {
+      const oldTitle = 'old title';
+      const oldContent = 'old content';
+      await app.factory.create('article', {
+        title: oldTitle,
+        content: oldContent,
+        lastModifiedAt: dayjs().subtract(1, 'year').toDate(),
+        userId: generalUserId,
+      });
+      mockAdminUserSession(app);
+      const title = 'new article';
+      const content = 'new content';
+      const result = await app.httpRequest().put('/api/article/1').send({
+        title,
+        content,
+      });
+
+      assert(result.status === 200);
+      assert(result.body.success);
+
+      // 数据库检查
+      const record = await app.model.Article.findByPk(1);
+
+      assert(record.title === title);
+      assert(record.content === content);
+      assert(
+        dayjs(record.lastModifiedAt).isAfter(dayjs().subtract(1, 'minute'))
+      );
+
+      // 编辑记录检查
+      const historyRecord = await app.model.ArticleHistory.findByPk(1);
+      assert(historyRecord.title === oldTitle);
+      assert(historyRecord.content === oldContent);
+      assert(historyRecord.userId === adminUserId);
+      assert(historyRecord.articleId === 1);
+    });
+
+    it("should fail when general user tries to change other user's article", async () => {
+      const oldTitle = 'old title';
+      const oldContent = 'old content';
+      await app.factory.create('article', {
+        title: oldTitle,
+        content: oldContent,
+        lastModifiedAt: dayjs().subtract(1, 'year').toDate(),
+        userId: adminUserId,
+      });
+      const { id: newUserId } = await app.factory.create('user');
+      await app.factory.create('article', {
+        title: oldTitle,
+        content: oldContent,
+        lastModifiedAt: dayjs().subtract(1, 'year').toDate(),
+        userId: newUserId,
+      });
+
+      mockGeneralUsersSession(app);
+      const title = 'new article';
+      const content = 'new content';
+
+      // 管理员文章
+      let result = await app.httpRequest().put('/api/article/1').send({
+        title,
+        content,
+      });
+
+      assert(result.status === 403);
+      assert(!result.body.success);
+      assert(result.body.errorMessage === '无权限修改文章');
+
+      // 数据库检查
+      let record = await app.model.Article.findByPk(1);
+
+      assert(record.title === oldTitle);
+      assert(record.content === oldContent);
+
+      // 其他普通用户的文章
+      result = await app.httpRequest().put('/api/article/2').send({
+        title,
+        content,
+      });
+
+      assert(result.status === 403);
+      assert(!result.body.success);
+      assert(result.body.errorMessage === '无权限修改文章');
+
+      // 数据库检查
+      record = await app.model.Article.findByPk(1);
+
+      assert(record.title === oldTitle);
+      assert(record.content === oldContent);
+    });
+
+    it('should fail when article is not exist', async () => {
+      const title = 'new article';
+      const content = 'new content';
+      mockGeneralUsersSession(app);
+      // 管理员文章
+      const result = await app.httpRequest().put('/api/article/1').send({
+        title,
+        content,
+      });
+
+      assert(result.status === 404);
+      assert(!result.body.success);
+      assert(result.body.errorMessage === '文章不存在');
+    });
+
+    it('should fail when title or content is empty', async () => {
+      const title = 'new article';
+      const content = 'new content';
+      mockGeneralUsersSession(app);
+      // 管理员文章
+      let result = await app.httpRequest().put('/api/article/1').send({
+        title,
+      });
+
+      assert(result.status === 422);
+      assert(!result.body.success);
+
+      result = await app.httpRequest().put('/api/article/1').send({
+        content,
+      });
 
       assert(result.status === 422);
       assert(!result.body.success);
