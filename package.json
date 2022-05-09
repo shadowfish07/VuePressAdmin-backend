@@ -37,7 +37,8 @@
     "node": ">=10.0.0"
   },
   "scripts": {
-    "start": "egg-scripts start --daemon --title=egg-server-admin",
+    "start": "egg-scripts start --daemon --title=vue-press-admin",
+    "start-for-docker": "egg-scripts start --title=vue-press-admin",
     "stop": "egg-scripts stop --title=egg-server-admin",
     "dev": "egg-bin dev --declarations=false",
     "debug": "egg-bin debug",
