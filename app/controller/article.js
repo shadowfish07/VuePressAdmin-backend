@@ -25,6 +25,13 @@ class ArticleController extends Controller {
     if (createResult) return this.ctx.response.returnSuccess(createResult);
   }
 
+  /**
+   * 更新文章标题和内容
+   *
+   * 管理员可以更新任意文章，普通用户只能更新自己写的文章
+   * @api PUT /article/:id
+   * @apiName 更新文章标题和内容
+   */
   async update() {
     this.ctx.validate(updateContentRule);
     const updateContentResult = await this.ctx.service.article.updateContent({
