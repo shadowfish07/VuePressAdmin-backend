@@ -34,7 +34,12 @@ jobs:
       run: npm install
 
     - name: Code Coverage
+      if: matrix.os == 'ubuntu-latest'
       run: npm run ci
+
+    - name : Code Coverage without shell test
+      if: matrix.os != 'ubuntu-latest'
+      run: npm run ci-without-shell
 
     - name: Upload Coverage Report To Codecov
       if: matrix.os == 'ubuntu-latest'
