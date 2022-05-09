@@ -16,6 +16,8 @@ function shell(taskId, vuepressPath) {
     shell.rm('-rf', `${vuepressPath}/.git`);
     shell.cd(vuepressPath);
     shell.exec('git init');
+    shell.exec('git config user.name "VuePressAdmin"');
+    shell.exec('git config user.email "admin@VuePressAdmin.com"');
     shell.exec('git add .');
     shell.exec("git commit -m '初始化'");
     shell.exec('npm install --registry=https://registry.npmmirror.com');

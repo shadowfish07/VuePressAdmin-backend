@@ -55,6 +55,10 @@ module.exports = {
           return '使用模板VuePressTemplate-recoX初始化VuePress';
         case 'commitArticle':
           return 'git commit 文章';
+        case 'buildVuePress':
+          return 'build VuePress';
+        case 'reInstallNPMDependence':
+          return '重新安装npm依赖';
         default:
           return shellTaskFilename;
       }

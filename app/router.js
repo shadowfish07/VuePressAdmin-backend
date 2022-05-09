@@ -15,5 +15,11 @@ module.exports = (app) => {
 
   router.resources('article', '/api/article', controller.article);
 
+  router.post('/api/vuepress/build', controller.vuepress.build);
+  router.post(
+    '/api/vuepress/re-install-NPM-dependence',
+    controller.vuepress.reInstallNPMDependence
+  );
+
   // router.resources("users", "/api/users", controller.users);
 };
