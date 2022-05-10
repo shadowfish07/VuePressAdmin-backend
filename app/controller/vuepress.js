@@ -4,13 +4,19 @@ const Controller = require('egg').Controller;
 
 class VuepressController extends Controller {
   /**
-   * 执行VuePress的build命令
+   * @api {post} /vuepress/build 执行VuePress build
+   * @apiName 执行VuePress_build
+   * @apiGroup VuePress
+   * @apiDescription 执行VuePress的build命令
+   * @apiVersion 0.1.0
+   * @apiPermission 管理员
    *
-   * 仅管理员可执行
+   * @apiSuccess {Boolean} success 是否成功
+   * @apiSuccess {string} data shell执行taskId
+   * @apiSuccess {string} errorMessage 错误信息
+   * @apiSuccess {string} traceId 请求id
    *
-   * @api POST /vuepress/build
-   * @apiName 执行build
-   * @permission admin
+   * @apiError 403 没有权限
    */
   async build() {
     const { ctx } = this;
@@ -23,6 +29,21 @@ class VuepressController extends Controller {
     return ctx.response.returnSuccess(await ctx.service.vuepress.build());
   }
 
+  /**
+   * @api {post} /vuepress/re-install-NPM-dependence 重新安装NPM依赖
+   * @apiName 重新安装NPM依赖
+   * @apiGroup VuePress
+   * @apiDescription 可以在出现各种奇怪问题时尝试执行
+   * @apiVersion 0.1.0
+   * @apiPermission 管理员
+   *
+   * @apiSuccess {Boolean} success 是否成功
+   * @apiSuccess {string} data shell执行taskId
+   * @apiSuccess {string} errorMessage 错误信息
+   * @apiSuccess {string} traceId 请求id
+   *
+   * @apiError 403 没有权限
+   */
   async reInstallNPMDependence() {
     const { ctx } = this;
     if (ctx.session.role !== 'admin') {

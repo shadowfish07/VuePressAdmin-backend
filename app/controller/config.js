@@ -26,11 +26,27 @@ const initSite = {
 
 class ConfigController extends Controller {
   /**
-   * 添加或更新给定的站点配置
-   * @api PATCH /config
+   * @api {patch} /config 更新站点配置
    * @apiName 更新站点配置
-   * @permission admin
-   * @apiParam {json} 键值对，键为配置项名称，值为配置项值。e.g: { 'hasInit': true, 'siteName': 'cool site' }
+   * @apiGroup Config
+   * @apiDescription 添加或更新给定的站点配置
+   * @apiVersion 0.1.0
+   * @apiPermission 管理员
+   *
+   * @apiHeader content-type application/json
+   * @apiBody {json} config 键值对，键为配置项名称，值为配置项值。
+   * @apiParamExample {json} config参数实例:
+   * { 'hasInit': true, 'siteName': 'cool site' }
+   *
+   * @apiSuccess {Boolean} success 是否成功
+   * @apiSuccess {string} data shell执行taskId
+   * @apiSuccess {string} errorMessage 错误信息
+   * @apiSuccess {string} traceId 请求id
+   *
+   * @apiError 422 传入参数错误
+   * @apiError 422 content-type必须是application/json
+   * @apiError 403 没有权限
+   * @apiError 400 配置项值应为boolean的传参格式错误
    */
   async patch() {
     const { ctx } = this;
@@ -48,13 +64,31 @@ class ConfigController extends Controller {
   /**
    * TODO 支持远程仓库连接
    *
-   * 执行新站点初始化操作，不允许重复执行。
-   *
    * 返回初始化VuePress的taskId
-   * @api POST /config/init
+   * @api {post} /config/init 初始化站点
    * @apiName 初始化站点
-   * @permission admin
-   * @apiParam {string} vuePressTemplate 初始化模板类型，目前支持VuePressTemplate-recoX
+   * @apiGroup Config
+   * @apiDescription 执行新站点初始化操作，不允许重复执行，只能在站点未初始化时执行。
+   * @apiVersion 0.1.0
+   * @apiPermission 管理员
+   *
+   * @apiBody {string} siteName 站点名称
+   * @apiBody {string="VuePressTemplate-recoX"} vuePressTemplate 初始化模板类型
+   * @apiBody {string="none","github","gitee"} gitPlatform git远程托管平台类型
+   * @apiBody {string="new","import"} [gitType=new] 新建或导入git
+   * @apiBody {string} [gitURL] git远程托管平台地址
+   * @apiBody {string} [gitRepoName] git远程托管平台仓库名称
+   *
+   * @apiSuccess {Boolean} success 是否成功
+   * @apiSuccess {string} data shell执行taskId
+   * @apiSuccess {string} errorMessage 错误信息
+   * @apiSuccess {string} traceId 请求id
+   *
+   * @apiError 422 传入参数错误
+   * @apiError 403 没有权限
+   * @apiError 403 站点已经初始化
+   * @apiError 400 配置项值应为boolean的传参格式错误
+   *
    */
   async initSite() {
     const { ctx } = this;
