@@ -21,6 +21,7 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
+    "apidoc": "^0.51.1",
     "autod": "^3.0.1",
     "autod-egg": "^1.1.0",
     "cz-conventional-changelog": "^3.3.0",
@@ -50,7 +51,8 @@
     "ci": "npm run lint && npm run cov",
     "ci-without-shell": "npm run lint && egg-bin cov --ignore **/shell/**",
     "autod": "autod",
-    "commit": "git add . && cz"
+    "commit": "git add . && cz",
+    "apidoc": "apidoc -i app -o apidoc"
   },
   "ci": {
     "version": "10"
