@@ -25,6 +25,7 @@
     "autod": "^3.0.1",
     "autod-egg": "^1.1.0",
     "cz-conventional-changelog": "^3.3.0",
+    "dotenv-cli": "^5.1.0",
     "egg-bin": "^4.11.0",
     "egg-ci": "^1.11.0",
     "egg-mock": "^3.21.0",
@@ -52,7 +53,8 @@
     "ci-without-shell": "npm run lint && egg-bin cov --ignore **/shell/**",
     "autod": "autod",
     "commit": "git add . && cz",
-    "apidoc": "apidoc -i app -o apidoc"
+    "apidoc": "apidoc -i app -o apidoc",
+    "release": "dotenv release-it --"
   },
   "ci": {
     "version": "10"

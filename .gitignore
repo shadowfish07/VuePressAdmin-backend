@@ -16,3 +16,4 @@ database
 vuepress/
 vuepress-test/
 apidoc/
+.env
