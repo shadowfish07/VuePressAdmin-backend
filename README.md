@@ -66,6 +66,8 @@ VuePressAdmin使用**release-it**自动生成版本号、发布版本、生成CH
 
 VuePressAdmin使用**codecov**提供集成化的代码覆盖率报告。
 
+VuePressAdmin使用**apidoc**生成API文档，搭配**GitHub Action**和**netlify**自动更新发布API文档。
+
 ## 相关文章
 
 建立、维护开源项目的过程让我了解、学会了很多新技术，故对一些自己印象深刻的经历做了总结，希望能够帮到更多的人。
