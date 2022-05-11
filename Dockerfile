@@ -9,6 +9,7 @@ COPY ./start.sh /VuePressAdmin/start.sh
 WORKDIR /VuePressAdmin
 
 EXPOSE 7001
+EXPOSE 8080
 
 VOLUME /VuePressAdmin/database
 VOLUME /VuePressAdmin/shellOutput
