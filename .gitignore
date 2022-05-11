@@ -18,3 +18,4 @@ vuepress-test/
 apidoc/
 .env
 Caddyfile
+release.md
