@@ -5,9 +5,15 @@ module.exports = {
    * @param shellTaskFilename {string} shell任务文件名，文件名应是app/shell/目录下的文件，不包含路径名
    * @param [args] {array} shell任务执行参数
    * @param [callback] {function} 完成最终数据库写入后执行的回调函数，传入第一个参数isFailed标记任务是否成功
+   * @param [afterFork] {function} 在子进程创建后执行的回调函数，传入第一个参数forked是创建的ChildProcess对象
    * @returns {Promise<string>} 返回taskId
    */
-  async startShellTask(shellTaskFilename, args = [], callback = null) {
+  async startShellTask(
+    shellTaskFilename,
+    args = [],
+    callback = null,
+    afterFork = null
+  ) {
     const fs = require('fs');
     const dayjs = require('dayjs');
     const { v4: uuidv4 } = require('uuid');
@@ -59,6 +65,8 @@ module.exports = {
           return 'build VuePress';
         case 'reInstallNPMDependence':
           return '重新安装npm依赖';
+        case 'runCaddyFileServer':
+          return '启动Caddy文件服务器';
         default:
           return shellTaskFilename;
       }

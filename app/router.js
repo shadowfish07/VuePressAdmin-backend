@@ -21,5 +21,7 @@ module.exports = (app) => {
     controller.vuepress.reInstallNPMDependence
   );
 
+  router.post('/api/deploy/local', controller.deploy.switchLocalDeploy);
+
   // router.resources("users", "/api/users", controller.users);
 };
