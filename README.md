@@ -57,7 +57,9 @@ VuePressAdmin后端部分主要使用的框架和库：
 
 VuePressAdmin使用**sqlite**作为数据库。
 
-VuePressAdmin使用**Commitizen**处理生成优雅、规范的代码提交记录。
+VuePressAdmin基于**Angular Conventional Changelog**规范，使用**Commitizen**处理生成优雅、规范的代码提交记录。
+
+VuePressAdmin使用**release-it**自动生成版本号、发布版本、生成CHANGELOG。
 
 VuePressAdmin使用**codecov**提供集成化的代码覆盖率报告。
 
