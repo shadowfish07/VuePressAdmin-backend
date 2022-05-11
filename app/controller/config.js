@@ -30,7 +30,7 @@ class ConfigController extends Controller {
    * @apiName 更新站点配置
    * @apiGroup Config
    * @apiDescription 添加或更新给定的站点配置
-   * @apiVersion 0.1.0
+   *
    * @apiPermission 管理员
    *
    * @apiHeader content-type application/json
@@ -69,7 +69,7 @@ class ConfigController extends Controller {
    * @apiName 初始化站点
    * @apiGroup Config
    * @apiDescription 执行新站点初始化操作，不允许重复执行，只能在站点未初始化时执行。
-   * @apiVersion 0.1.0
+   *
    * @apiPermission 管理员
    *
    * @apiBody {string} siteName 站点名称

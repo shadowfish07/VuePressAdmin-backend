@@ -8,7 +8,7 @@ class VuepressController extends Controller {
    * @apiName 执行VuePress_build
    * @apiGroup VuePress
    * @apiDescription 执行VuePress的build命令
-   * @apiVersion 0.1.0
+   *
    * @apiPermission 管理员
    *
    * @apiSuccess {Boolean} success 是否成功
@@ -34,7 +34,7 @@ class VuepressController extends Controller {
    * @apiName 重新安装NPM依赖
    * @apiGroup VuePress
    * @apiDescription 可以在出现各种奇怪问题时尝试执行
-   * @apiVersion 0.1.0
+   *
    * @apiPermission 管理员
    *
    * @apiSuccess {Boolean} success 是否成功

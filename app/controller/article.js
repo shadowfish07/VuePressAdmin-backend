@@ -14,7 +14,7 @@ class ArticleController extends Controller {
    * @apiName 新增文章
    * @apiGroup Article
    * @apiDescription 默认新增的文章类型是草稿。新建文件、写入数据库、执行git commit，从而完成文章新建
-   * @apiVersion 0.1.0
+   *
    * @apiPermission 普通用户
    *
    * @apiBody {string} title 文章标题
@@ -41,7 +41,7 @@ class ArticleController extends Controller {
    * @apiName 更新文章标题和内容
    * @apiGroup Article
    * @apiDescription 管理员可以更新任意文章，普通用户只能更新自己写的文章
-   * @apiVersion 0.1.0
+   *
    * @apiPermission 普通用户
    *
    * @apiParam {number} id 文章ID

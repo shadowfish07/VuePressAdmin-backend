@@ -8,7 +8,7 @@ class UserController extends Controller {
    * @apiName 获取当前登录用户个人信息
    * @apiGroup User
    * @apiDescription 返回当前用户个人信息
-   * @apiVersion 0.1.0
+   *
    * @apiPermission 普通用户
    *
    * @apiSuccess {Boolean} success 是否成功

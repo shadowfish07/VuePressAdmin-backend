@@ -8,7 +8,7 @@ class CookieController extends Controller {
    * @apiName 登录
    * @apiGroup Cookie
    * @apiDescription 返回登录态cookie，同时返回用户个人信息
-   * @apiVersion 0.1.0
+   *
    * @apiPermission 普通用户
    *
    * @apiBody {String} username 用户名
