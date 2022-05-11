@@ -17,3 +17,4 @@ vuepress/
 vuepress-test/
 apidoc/
 .env
+Caddyfile
