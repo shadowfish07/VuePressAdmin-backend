@@ -53,8 +53,9 @@ VuePressAdmin后端部分主要使用的框架和库：
 
 - VuePress（作为站点的驱动框架）
 - EggJS（web服务框架）
+- Caddy（新一代web服务器，提供本地部署站点能力）
 - Shelljs（方便地执行shell）
-- git（文章版本管理基于git进行）
+- git（对站点、文章的修改都会自动提交到git，方便灵活发布站点）
 - sinon（提供单元测试mock能力）
 
 VuePressAdmin使用**sqlite**作为数据库。
