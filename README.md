@@ -8,6 +8,8 @@
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
 [![codecov](https://codecov.io/gh/shadowfish07/VuePressAdmin-backend/branch/main/graph/badge.svg?token=W4S7NR20G7)](https://codecov.io/gh/shadowfish07/VuePressAdmin-backend)
 
+[API文档](https://apidoc.vuepress.shadowfish0.top/)
+
 用类似WordPress的方式管理你的VuePress站点！
 
 VuePressAdmin允许你方便地管理VuePress的配置、发布和管理文章，后续还将支持一键发布至多平台、允许多作者等功能。
@@ -78,3 +80,7 @@ VuePressAdmin使用**codecov**提供集成化的代码覆盖率报告。
 - [聊聊Nodejs的单元测试，要怎么测试涉及子线程逻辑的代码？](https://blog.shadowfish0.top/2022-05-05-nodejs-dan-yuan-ce-shi.html)
 
 玩单元测试时的一些感受~涉及到了对sinon、proxyquire的一些探讨
+
+## 更新日志
+
+更新日志由release-it自动生成：[CHANGELOG](/CHANGELOG.md)
