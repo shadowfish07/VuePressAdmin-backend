@@ -114,6 +114,11 @@ module.exports = {
           silent: true,
         }
       );
+
+      if (afterFork) {
+        afterFork(forked);
+      }
+
       forked.on('message', async ({ msg }) => {
         this.logger.error(`{${taskId}} 执行shell子线程时出现异常：${msg}`);
         writerStream.write(
