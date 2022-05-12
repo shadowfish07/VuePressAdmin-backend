@@ -17,6 +17,7 @@ class VuepressController extends Controller {
    * @apiSuccess {string} traceId 请求id
    *
    * @apiError 403 没有权限
+   * @apiError 403 站点未初始化
    */
   async build() {
     const { ctx } = this;

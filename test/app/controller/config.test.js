@@ -46,7 +46,7 @@ describe('test/app/controller/config.test.js', () => {
           .patch('/api/config')
           .set('content-type', 'application/json')
           .send({
-            hasInit: value,
+            testBoolean: value,
           });
 
         assert(result.statusCode === (success ? 200 : 400));
@@ -57,7 +57,7 @@ describe('test/app/controller/config.test.js', () => {
 
         const config = await app.model.Config.findOne({
           where: {
-            key: 'hasInit',
+            key: 'testBoolean',
           },
         });
         assert(
@@ -158,7 +158,15 @@ describe('test/app/controller/config.test.js', () => {
   describe('POST /api/config/init', () => {
     const RUNNING = 1;
     let fakeChildProcess;
-    beforeEach(() => {
+    beforeEach(async () => {
+      await app.model.Config.update(
+        { key: 'hasInit', value: 0 },
+        {
+          where: {
+            key: 'hasInit',
+          },
+        }
+      );
       fakeChildProcess = new FakeChildProcess();
       sinon.mock(childProcess).expects('fork').returns(fakeChildProcess);
     });

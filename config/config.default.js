@@ -17,11 +17,28 @@ module.exports = (appInfo) => {
     appInfo.name + '8kYnNQCeXJr3vAkKJhbyGNtvMVwj8NvqyeKPQ9HJPpQdLkP2t';
 
   // add your middleware config here
-  config.middleware = ['log', 'auth', 'errorHandler'];
+  config.middleware = ['log', 'auth', 'checkSiteInit', 'errorHandler'];
 
   config.auth = {
     ignore(ctx) {
       if (
+        ctx.request.url.startsWith('/api/cookie') &&
+        ctx.request.method === 'GET'
+      ) {
+        return true;
+      }
+      return false;
+    },
+  };
+
+  config.checkSiteInit = {
+    ignore(ctx) {
+      if (
+        ctx.request.url.startsWith('/api/config/init') &&
+        ctx.request.method === 'POST'
+      ) {
+        return true;
+      } else if (
         ctx.request.url.startsWith('/api/cookie') &&
         ctx.request.method === 'GET'
       ) {

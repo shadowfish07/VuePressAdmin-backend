@@ -45,6 +45,8 @@ class ConfigService extends Service {
       switch (key) {
         case 'hasInit':
           return true;
+        case 'testBoolean':
+          return true;
         default:
           return false;
       }

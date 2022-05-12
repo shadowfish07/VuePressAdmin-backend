@@ -43,6 +43,7 @@ class ConfigController extends Controller {
    * @apiSuccess {string} errorMessage 错误信息
    * @apiSuccess {string} traceId 请求id
    *
+   * @apiError 403 站点未初始化
    * @apiError 422 传入参数错误
    * @apiError 422 content-type必须是application/json
    * @apiError 403 没有权限
