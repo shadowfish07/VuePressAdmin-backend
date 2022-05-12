@@ -24,6 +24,7 @@ class ArticleController extends Controller {
    * @apiSuccess {string} errorMessage 错误信息
    * @apiSuccess {string} traceId 请求id
    *
+   * @apiError 403 站点未初始化
    * @apiError 422 传入参数错误
    */
   async create() {
@@ -53,6 +54,7 @@ class ArticleController extends Controller {
    * @apiSuccess {string} errorMessage 错误信息
    * @apiSuccess {string} traceId 请求id
    *
+   * @apiError 403 站点未初始化
    * @apiError 422 传入参数错误
    * @apiError 403 没有权限
    * @apiError 404 文章不存在

@@ -14,5 +14,5 @@ module.exports = async () => {
     role: 'general',
     avatar: 'https://doge.shadowfish0.top/%E7%94%B7%E5%A4%B4%E5%83%8F.png',
   });
-  await app.model.Config.create({ key: 'hasInit', value: 0 });
+  await app.model.Config.create({ key: 'hasInit', value: 1 });
 };
