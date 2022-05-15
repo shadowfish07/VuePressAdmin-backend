@@ -13,6 +13,7 @@ const shelljs = require('shelljs');
 const { gitToJs } = require('git-parse');
 const dayjs = require('dayjs');
 const fse = require('fs-extra');
+const { API_ERROR_CODE } = require('../../../app/extend/response');
 
 describe('test/app/controller/article.test.js', () => {
   before(async () => {
@@ -53,6 +54,7 @@ describe('test/app/controller/article.test.js', () => {
 
       assert(result.status === 200);
       assert(result.body.success);
+      assert(result.body.errorCode === API_ERROR_CODE.SUCCESS);
       assert(Number.isInteger(result.body.data));
 
       // 数据库检查
@@ -107,6 +109,7 @@ describe('test/app/controller/article.test.js', () => {
 
       assert(result.status === 200);
       assert(result.body.success);
+      assert(result.body.errorCode === API_ERROR_CODE.SUCCESS);
       assert(Number.isInteger(result.body.data));
 
       // 数据库检查
@@ -158,8 +161,9 @@ describe('test/app/controller/article.test.js', () => {
       mockAdminUserSession(app);
       const result = await app.httpRequest().post('/api/article').send({});
 
-      assert(result.status === 422);
+      assert(result.status === 200);
       assert(!result.body.success);
+      assert(result.body.errorCode === API_ERROR_CODE.PARAM_INVALID);
     });
   });
 
@@ -182,6 +186,7 @@ describe('test/app/controller/article.test.js', () => {
 
       assert(result.status === 200);
       assert(result.body.success);
+      assert(result.body.errorCode === API_ERROR_CODE.SUCCESS);
 
       // 数据库检查
       const record = await app.model.Article.findByPk(1);
@@ -219,6 +224,7 @@ describe('test/app/controller/article.test.js', () => {
 
       assert(result.status === 200);
       assert(result.body.success);
+      assert(result.body.errorCode === API_ERROR_CODE.SUCCESS);
 
       // 数据库检查
       const record = await app.model.Article.findByPk(1);
@@ -256,6 +262,7 @@ describe('test/app/controller/article.test.js', () => {
 
       assert(result.status === 200);
       assert(result.body.success);
+      assert(result.body.errorCode === API_ERROR_CODE.SUCCESS);
 
       // 数据库检查
       const record = await app.model.Article.findByPk(1);
@@ -301,9 +308,9 @@ describe('test/app/controller/article.test.js', () => {
         content,
       });
 
-      assert(result.status === 403);
+      assert(result.status === 200);
       assert(!result.body.success);
-      assert(result.body.errorMessage === '无权限修改文章');
+      assert(result.body.errorCode === API_ERROR_CODE.NO_PERMISSION);
 
       // 数据库检查
       let record = await app.model.Article.findByPk(1);
@@ -317,9 +324,9 @@ describe('test/app/controller/article.test.js', () => {
         content,
       });
 
-      assert(result.status === 403);
+      assert(result.status === 200);
       assert(!result.body.success);
-      assert(result.body.errorMessage === '无权限修改文章');
+      assert(result.body.errorCode === API_ERROR_CODE.NO_PERMISSION);
 
       // 数据库检查
       record = await app.model.Article.findByPk(1);
@@ -338,9 +345,9 @@ describe('test/app/controller/article.test.js', () => {
         content,
       });
 
-      assert(result.status === 404);
+      assert(result.status === 200);
       assert(!result.body.success);
-      assert(result.body.errorMessage === '文章不存在');
+      assert(result.body.errorCode === API_ERROR_CODE.NOT_FOUND);
     });
 
     it('should fail when title or content is empty', async () => {
@@ -352,15 +359,17 @@ describe('test/app/controller/article.test.js', () => {
         title,
       });
 
-      assert(result.status === 422);
+      assert(result.status === 200);
       assert(!result.body.success);
+      assert(result.body.errorCode === API_ERROR_CODE.PARAM_INVALID);
 
       result = await app.httpRequest().put('/api/article/1').send({
         content,
       });
 
-      assert(result.status === 422);
+      assert(result.status === 200);
       assert(!result.body.success);
+      assert(result.body.errorCode === API_ERROR_CODE.PARAM_INVALID);
     });
   });
 });

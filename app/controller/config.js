@@ -1,5 +1,6 @@
 'use strict';
 
+const { API_ERROR_CODE } = require('../extend/response');
 const Controller = require('egg').Controller;
 
 const initSite = {
@@ -40,23 +41,29 @@ class ConfigController extends Controller {
    *
    * @apiSuccess {Boolean} success 是否成功
    * @apiSuccess {string} data shell执行taskId
+   * @apiSuccess {string} errorCode 错误码
    * @apiSuccess {string} errorMessage 错误信息
    * @apiSuccess {string} traceId 请求id
    *
-   * @apiError 403 站点未初始化
-   * @apiError 422 传入参数错误
-   * @apiError 422 content-type必须是application/json
-   * @apiError 403 没有权限
-   * @apiError 400 配置项值应为boolean的传参格式错误
+   * @apiError (错误码) A0101 传入参数错误
+   * @apiError (错误码) A0102 content-type必须是application/json
+   * @apiError (错误码) A0201 没有权限
+   * @apiError (错误码) A0202 站点未初始化
    */
   async patch() {
     const { ctx } = this;
     if (ctx.request.header['content-type'] !== 'application/json') {
-      return ctx.response.returnFail('content-type必须是application/json', 422);
+      return ctx.response.returnFail(
+        'content-type必须是application/json',
+        API_ERROR_CODE.CONTENT_TYPE_NOT_SUPPORT
+      );
     }
     if (ctx.session.role !== 'admin') {
       ctx.logger.info('用户无权限执行此操作');
-      return ctx.response.returnFail('你没有权限', 403);
+      return ctx.response.returnFail(
+        '你没有权限',
+        API_ERROR_CODE.NO_PERMISSION
+      );
     }
     const patchResult = await ctx.service.config.patch(ctx.request.body);
     if (patchResult) return ctx.response.returnSuccess();
@@ -82,13 +89,14 @@ class ConfigController extends Controller {
    *
    * @apiSuccess {Boolean} success 是否成功
    * @apiSuccess {string} data shell执行taskId
+   * @apiSuccess {string} errorCode 错误码
    * @apiSuccess {string} errorMessage 错误信息
    * @apiSuccess {string} traceId 请求id
    *
-   * @apiError 422 传入参数错误
-   * @apiError 403 没有权限
-   * @apiError 403 站点已经初始化
-   * @apiError 400 配置项值应为boolean的传参格式错误
+   * @apiError (错误码) A0100 站点已初始化
+   * @apiError (错误码) A0101 传入参数错误
+   * @apiError (错误码) A0200 需要登录
+   * @apiError (错误码) A0201 没有权限
    *
    */
   async initSite() {
@@ -97,12 +105,18 @@ class ConfigController extends Controller {
 
     if (ctx.session.role !== 'admin') {
       ctx.logger.info('用户无权限执行此操作');
-      return ctx.response.returnFail('你没有权限', 403);
+      return ctx.response.returnFail(
+        '你没有权限',
+        API_ERROR_CODE.NO_PERMISSION
+      );
     }
 
     if (await ctx.service.config.hasSiteInit()) {
       ctx.logger.info('站点已经初始化');
-      return ctx.response.returnFail('站点已经初始化', 403);
+      return ctx.response.returnFail(
+        '站点已经初始化',
+        API_ERROR_CODE.BAD_REQUEST
+      );
     }
 
     const patchResult = await ctx.service.config.patch({

@@ -13,10 +13,12 @@ class UserController extends Controller {
    *
    * @apiSuccess {Boolean} success 是否成功
    * @apiUse UserInfoSuccessData
+   * @apiSuccess {string} errorCode 错误码
    * @apiSuccess {string} errorMessage 错误信息
    * @apiSuccess {string} traceId 请求id
    *
-   * @apiError 403 站点未初始化
+   * @apiError (错误码) A0200 需要登录
+   * @apiError (错误码) A0202 站点未初始化
    */
   async me() {
     this.ctx.response.returnSuccess(

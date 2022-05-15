@@ -1,13 +1,15 @@
 'use strict';
 
 const { app, assert } = require('egg-mock/bootstrap');
+const { API_ERROR_CODE } = require('../../../app/extend/response');
 
 describe('test/app/controller/cookie.test.js', () => {
   describe('GET /api/cookie', () => {
     it('should fail when no param is sent', async () => {
       const result = await app.httpRequest().get('/api/cookie');
-      assert(result.status === 422);
+      assert(result.status === 200);
       assert(!result.body.success);
+      assert(result.body.errorCode === API_ERROR_CODE.PARAM_INVALID);
       assert(!result.header['set-cookie']);
     });
 
@@ -17,6 +19,7 @@ describe('test/app/controller/cookie.test.js', () => {
         .get('/api/cookie?username=admin&password=admin');
       assert(result.status === 200);
       assert(result.body.success);
+      assert(result.body.errorCode === API_ERROR_CODE.SUCCESS);
       assert(result.header['set-cookie'][0].includes('EGG_SESS'));
       assert(result.body.data.id === 1);
       assert(result.body.data.username === 'admin');
@@ -31,8 +34,9 @@ describe('test/app/controller/cookie.test.js', () => {
       const result = await app
         .httpRequest()
         .get('/api/cookie?username=not_exist&password=admin');
-      assert(result.status === 400);
+      assert(result.status === 200);
       assert(!result.body.success);
+      assert(result.body.errorCode === API_ERROR_CODE.BAD_REQUEST);
       assert(!result.header['set-cookie']);
     });
   });

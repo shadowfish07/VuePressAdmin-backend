@@ -1,5 +1,6 @@
 'use strict';
 const NotExistError = require('../Error/NotExistError');
+const { API_ERROR_CODE } = require('../extend/response');
 const Service = require('egg').Service;
 class shellTaskService extends Service {
   /**
@@ -11,12 +12,18 @@ class shellTaskService extends Service {
     try {
       const shellTask = await this.canQueryShellTask(id);
       if (!shellTask) {
-        return this.ctx.response.returnFail('无权限', 403);
+        return this.ctx.response.returnFail(
+          '无权限',
+          API_ERROR_CODE.NO_PERMISSION
+        );
       }
       return shellTask;
     } catch (err) {
       if (err instanceof NotExistError) {
-        return this.ctx.response.returnFail('任务不存在', 404);
+        return this.ctx.response.returnFail(
+          '任务不存在',
+          API_ERROR_CODE.NOT_FOUND
+        );
       }
       throw err;
     }

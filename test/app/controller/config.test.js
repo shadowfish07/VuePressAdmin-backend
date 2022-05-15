@@ -9,6 +9,7 @@ const sinon = require('sinon');
 const childProcess = require('child_process');
 const FakeChildProcess = require('../../util/FakeChildProcess');
 const shell = require('shelljs');
+const { API_ERROR_CODE } = require('../../../app/extend/response');
 
 describe('test/app/controller/config.test.js', () => {
   before(async () => {
@@ -30,6 +31,7 @@ describe('test/app/controller/config.test.js', () => {
         });
 
       assert(result.statusCode === 200);
+      assert(result.body.errorCode === API_ERROR_CODE.SUCCESS);
 
       const config = await app.model.Config.findOne({
         where: {
@@ -49,7 +51,15 @@ describe('test/app/controller/config.test.js', () => {
             testBoolean: value,
           });
 
-        assert(result.statusCode === (success ? 200 : 400));
+        assert(result.statusCode === 200);
+
+        assert(result.body.success === success);
+
+        assert(
+          result.body.errorCode === success
+            ? API_ERROR_CODE.SUCCESS
+            : API_ERROR_CODE.PARAM_INVALID
+        );
 
         if (!success) {
           return;
@@ -90,6 +100,7 @@ describe('test/app/controller/config.test.js', () => {
         });
 
       assert(result.statusCode === 200);
+      assert(result.body.errorCode === API_ERROR_CODE.SUCCESS);
 
       let config = await app.model.Config.findAll({
         where: {
@@ -119,6 +130,7 @@ describe('test/app/controller/config.test.js', () => {
         });
 
       assert(result.statusCode === 200);
+      assert(result.body.errorCode === API_ERROR_CODE.SUCCESS);
 
       config = await app.model.Config.findAll({
         where: {
@@ -149,9 +161,9 @@ describe('test/app/controller/config.test.js', () => {
           })
         );
 
-      assert(result.statusCode === 422);
+      assert(result.statusCode === 200);
       assert(result.body.success === false);
-      assert(result.body.errorMessage === 'content-type必须是application/json');
+      assert(result.body.errorCode === API_ERROR_CODE.CONTENT_TYPE_NOT_SUPPORT);
     });
   });
 
@@ -193,6 +205,7 @@ describe('test/app/controller/config.test.js', () => {
 
       assert(result.statusCode === 200);
       assert(result.body.success);
+      assert(result.body.errorCode === API_ERROR_CODE.SUCCESS);
       assert(result.body.data);
 
       const task = await app.model.ShellTask.findOne({
@@ -264,9 +277,9 @@ describe('test/app/controller/config.test.js', () => {
           vuePressTemplate,
         });
 
-      assert(result.statusCode === 403);
+      assert(result.statusCode === 200);
       assert(result.body.success === false);
-      assert(result.body.errorMessage === '站点已经初始化');
+      assert(result.body.errorCode === API_ERROR_CODE.BAD_REQUEST);
     });
     it('should fail when vuepress dir is exist', async () => {
       const fs = require('fs');
@@ -284,9 +297,9 @@ describe('test/app/controller/config.test.js', () => {
           vuePressTemplate,
         });
 
-      assert(result.statusCode === 403);
+      assert(result.statusCode === 200);
       assert(result.body.success === false);
-      assert(result.body.errorMessage === '已存在vuepress目录，拒绝执行初始化');
+      assert(result.body.errorCode === API_ERROR_CODE.BAD_REQUEST);
     });
     it('should fail when gitPlatform is not support', async () => {
       const siteName = 'test';
@@ -302,8 +315,9 @@ describe('test/app/controller/config.test.js', () => {
           vuePressTemplate,
         });
 
-      assert(result.statusCode === 422);
+      assert(result.statusCode === 200);
       assert(result.body.success === false);
+      assert(result.body.errorCode === API_ERROR_CODE.PARAM_INVALID);
     });
     it('should fail when vuepress template is not support', async () => {
       const siteName = 'test';
@@ -319,8 +333,9 @@ describe('test/app/controller/config.test.js', () => {
           vuePressTemplate,
         });
 
-      assert(result.statusCode === 422);
+      assert(result.statusCode === 200);
       assert(result.body.success === false);
+      assert(result.body.errorCode === API_ERROR_CODE.PARAM_INVALID);
     });
     it('should fail when siteName is empty', async () => {
       const siteName = '';
@@ -336,8 +351,9 @@ describe('test/app/controller/config.test.js', () => {
           vuePressTemplate,
         });
 
-      assert(result.statusCode === 422);
+      assert(result.statusCode === 200);
       assert(result.body.success === false);
+      assert(result.body.errorCode === API_ERROR_CODE.PARAM_INVALID);
     });
     it('should fail when user is not admin', async () => {
       mockGeneralUsersSession(app);
@@ -354,9 +370,9 @@ describe('test/app/controller/config.test.js', () => {
           vuePressTemplate,
         });
 
-      assert(result.statusCode === 403);
+      assert(result.statusCode === 200);
       assert(result.body.success === false);
-      assert(result.body.errorMessage === '你没有权限');
+      assert(result.body.errorCode === API_ERROR_CODE.NO_PERMISSION);
     });
   });
 });

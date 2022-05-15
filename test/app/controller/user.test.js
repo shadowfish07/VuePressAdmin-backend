@@ -2,6 +2,7 @@
 
 const { app, assert } = require('egg-mock/bootstrap');
 const { mockAdminUserSession } = require('../../util/utils');
+const { API_ERROR_CODE } = require('../../../app/extend/response');
 
 describe('test/app/controller/user.test.js', () => {
   describe('GET /api/user/me', () => {
@@ -12,6 +13,8 @@ describe('test/app/controller/user.test.js', () => {
 
       assert(result.status === 200);
       assert(result.body.success);
+      assert(result.body.errorCode === API_ERROR_CODE.SUCCESS);
+
       assert(result.body.data.id === 1);
       assert(result.body.data.username === 'admin');
       assert(result.body.data.role === 'admin');
@@ -24,8 +27,9 @@ describe('test/app/controller/user.test.js', () => {
     it('should fail when no cookie', async () => {
       const result = await app.httpRequest().get('/api/user/me');
 
-      assert(result.status === 401);
+      assert(result.status === 200);
       assert(!result.body.success);
+      assert(result.body.errorCode === API_ERROR_CODE.NOT_AUTHORIZED);
     });
   });
 });
