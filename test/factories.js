@@ -1,6 +1,7 @@
 'use strict';
 const { factory } = require('factory-girl');
 const { adminUserId } = require('./util/utils');
+const { v4: uuidv4 } = require('uuid');
 
 module.exports = (app) => {
   // 可以通过 app.factory 访问 factory 实例
@@ -34,6 +35,17 @@ module.exports = (app) => {
       userId: options.userId || adminUserId,
       deletedById: options.deletedById || null,
       deletedAt: options.deletedAt || null,
+    };
+  });
+
+  factory.define('shellTask', app.model.ShellTask, (options) => {
+    return {
+      taskId: options.taskId || uuidv4(),
+      taskName: options.taskName || 'shell任务',
+      state: options.state || 0,
+      log: options.createAt || factory.chance('sentence', { words: 3 }),
+      timeConsumed: options.timeConsumed || 0,
+      userId: options.userId || adminUserId,
     };
   });
 };
