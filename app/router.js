@@ -23,5 +23,7 @@ module.exports = (app) => {
 
   router.post('/api/deploy/local', controller.deploy.switchLocalDeploy);
 
+  router.get('/api/shell-task/:id', controller.shellTask.getShellTask);
+
   // router.resources("users", "/api/users", controller.users);
 };
