@@ -9,6 +9,7 @@ const {
 } = require('../../util/utils');
 const fs = require('fs');
 const path = require('path');
+const { API_ERROR_CODE } = require('../../../app/extend/response');
 
 describe('test/app/controller/deploy.test.js', () => {
   describe('POST /api/deploy/local', async () => {
@@ -44,6 +45,8 @@ describe('test/app/controller/deploy.test.js', () => {
 
       assert(result.status === 200);
       assert(result.body.success);
+      assert(result.body.errorCode === API_ERROR_CODE.SUCCESS);
+
       assert(
         result.body.data !== doNothingReturnData &&
           result.body.data !== stoppedReturnData
@@ -74,6 +77,8 @@ describe('test/app/controller/deploy.test.js', () => {
 
       assert(result.status === 200);
       assert(result.body.success);
+      assert(result.body.errorCode === API_ERROR_CODE.SUCCESS);
+
       assert(result.body.data === doNothingReturnData);
 
       const record = await app.model.Config.findOne({
@@ -99,6 +104,8 @@ describe('test/app/controller/deploy.test.js', () => {
 
       assert(result.status === 200);
       assert(result.body.success);
+      assert(result.body.errorCode === API_ERROR_CODE.SUCCESS);
+
       assert(
         result.body.data !== doNothingReturnData &&
           result.body.data !== stoppedReturnData
@@ -126,6 +133,8 @@ describe('test/app/controller/deploy.test.js', () => {
 
       assert(result.status === 200);
       assert(result.body.success);
+      assert(result.body.errorCode === API_ERROR_CODE.SUCCESS);
+
       assert(result.body.data === stoppedReturnData);
 
       const record = await app.model.Config.findOne({
@@ -152,6 +161,8 @@ describe('test/app/controller/deploy.test.js', () => {
 
       assert(result.status === 200);
       assert(result.body.success);
+      assert(result.body.errorCode === API_ERROR_CODE.SUCCESS);
+
       assert(result.body.data === doNothingReturnData);
 
       const record = await app.model.Config.findOne({
@@ -177,7 +188,7 @@ describe('test/app/controller/deploy.test.js', () => {
 
       assert(result.status === 200);
       assert(result.body.success);
-      assert(result.body.data === stoppedReturnData);
+      assert(result.body.errorCode === API_ERROR_CODE.SUCCESS);
 
       const record = await app.model.Config.findOne({
         where: {
@@ -198,9 +209,9 @@ describe('test/app/controller/deploy.test.js', () => {
           enable: true,
         });
 
-      assert(result.status === 403);
+      assert(result.status === 200);
       assert(!result.body.success);
-      assert(result.body.errorMessage === '你没有权限');
+      assert(result.body.errorCode === API_ERROR_CODE.NO_PERMISSION);
     });
     it('should fail when param format is invalid', async () => {
       mockAdminUserSession(app);
@@ -212,9 +223,9 @@ describe('test/app/controller/deploy.test.js', () => {
           enable: 233,
         });
 
-      assert(result.status === 422);
+      assert(result.status === 200);
       assert(!result.body.success);
-      assert(result.body.errorMessage === '请求参数错误');
+      assert(result.body.errorCode === API_ERROR_CODE.PARAM_INVALID);
 
       result = await app
         .httpRequest()
@@ -226,9 +237,9 @@ describe('test/app/controller/deploy.test.js', () => {
           })
         );
 
-      assert(result.status === 422);
+      assert(result.status === 200);
       assert(!result.body.success);
-      assert(result.body.errorMessage === 'content-type必须是application/json');
+      assert(result.body.errorCode === API_ERROR_CODE.CONTENT_TYPE_NOT_SUPPORT);
     });
   });
 });

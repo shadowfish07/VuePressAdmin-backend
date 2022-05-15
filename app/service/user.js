@@ -1,4 +1,5 @@
 'use strict';
+const { API_ERROR_CODE } = require('../extend/response');
 const Service = require('egg').Service;
 
 class UserService extends Service {
@@ -17,7 +18,10 @@ class UserService extends Service {
       attributes: { exclude: ['password'] },
     });
     if (!user) {
-      return this.ctx.response.returnFail('用户名或密码错误', 400);
+      return this.ctx.response.returnFail(
+        '用户名或密码错误',
+        API_ERROR_CODE.BAD_REQUEST
+      );
     }
     this.ctx.session.userId = user.id;
     this.ctx.session.role = user.role;

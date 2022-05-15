@@ -1,4 +1,5 @@
 'use strict';
+const { API_ERROR_CODE } = require('../extend/response');
 const Service = require('egg').Service;
 
 class ConfigService extends Service {
@@ -13,7 +14,10 @@ class ConfigService extends Service {
   async patch(config) {
     if (this.ctx.session.role !== 'admin') {
       this.ctx.logger.info('用户无权限执行此操作');
-      return this.ctx.response.returnFail('你没有权限', 403);
+      return this.ctx.response.returnFail(
+        '你没有权限',
+        API_ERROR_CODE.NO_PERMISSION
+      );
     }
 
     // 校验、转换Boolean配置
@@ -24,7 +28,10 @@ class ConfigService extends Service {
           config[key] = this.ctx.helper.transferToBoolean(value);
         } catch (err) {
           this.ctx.logger.info(`配置项${key}的值${value}不能转换为布尔值`);
-          return this.ctx.response.returnFail('配置项值格式错误', 400);
+          return this.ctx.response.returnFail(
+            '配置项值格式错误',
+            API_ERROR_CODE.BAD_REQUEST
+          );
         }
       }
     }
@@ -74,13 +81,16 @@ class ConfigService extends Service {
     const fs = require('fs');
     if (this.ctx.session.role !== 'admin') {
       this.ctx.logger.info('用户无权限执行此操作');
-      return this.ctx.response.returnFail('你没有权限', 403);
+      return this.ctx.response.returnFail(
+        '你没有权限',
+        API_ERROR_CODE.NO_PERMISSION
+      );
     }
     if (fs.existsSync(this.app.config.vuepress.path)) {
       this.ctx.logger.info('vuepress已存在，不初始化');
       return this.ctx.response.returnFail(
         '已存在vuepress目录，拒绝执行初始化',
-        403
+        API_ERROR_CODE.BAD_REQUEST
       );
     }
 
@@ -93,7 +103,10 @@ class ConfigService extends Service {
         break;
       default:
         this.ctx.logger.warn('未知的vuepress初始化模板类型');
-        return this.ctx.response.returnFail('未知的vuepress初始化模板类型');
+        return this.ctx.response.returnFail(
+          '未知的vuepress初始化模板类型',
+          API_ERROR_CODE.PARAM_INVALID
+        );
     }
 
     return taskId;

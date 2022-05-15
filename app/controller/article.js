@@ -22,10 +22,11 @@ class ArticleController extends Controller {
    * @apiSuccess {Boolean} success 是否成功
    * @apiSuccess {number} data 文章ID
    * @apiSuccess {string} errorMessage 错误信息
+   * @apiSuccess {string} errorCode 错误码
    * @apiSuccess {string} traceId 请求id
    *
-   * @apiError 403 站点未初始化
-   * @apiError 422 传入参数错误
+   * @apiError (错误码) A0101 传入参数错误
+   * @apiError (错误码) A0202 站点未初始化
    */
   async create() {
     this.ctx.validate(createRule);
@@ -51,13 +52,14 @@ class ArticleController extends Controller {
    *
    * @apiSuccess {Boolean} success 是否成功
    * @apiSuccess {number} data 文章ID
+   * @apiSuccess {string} errorCode 错误码
    * @apiSuccess {string} errorMessage 错误信息
    * @apiSuccess {string} traceId 请求id
    *
-   * @apiError 403 站点未初始化
-   * @apiError 422 传入参数错误
-   * @apiError 403 没有权限
-   * @apiError 404 文章不存在
+   * @apiError (错误码) A0101 传入参数错误
+   * @apiError (错误码) A0201 没有权限
+   * @apiError (错误码) A0202 站点未初始化
+   * @apiError (错误码) A0300 文章不存在
    */
   async update() {
     this.ctx.validate(updateContentRule);

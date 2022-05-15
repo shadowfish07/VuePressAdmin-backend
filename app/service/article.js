@@ -2,6 +2,7 @@
 const Service = require('egg').Service;
 const dayjs = require('dayjs');
 const NotExistError = require('../Error/NotExistError');
+const { API_ERROR_CODE } = require('../extend/response');
 
 class ArticleService extends Service {
   /**
@@ -120,11 +121,17 @@ class ArticleService extends Service {
   async updateContent({ id, content, title }) {
     try {
       if (!(await this.canUpdateContent(id))) {
-        return this.ctx.response.returnFail('无权限修改文章', 403);
+        return this.ctx.response.returnFail(
+          '无权限修改文章',
+          API_ERROR_CODE.NO_PERMISSION
+        );
       }
     } catch (err) {
       if (err instanceof NotExistError) {
-        return this.ctx.response.returnFail('文章不存在', 404);
+        return this.ctx.response.returnFail(
+          '文章不存在',
+          API_ERROR_CODE.NOT_FOUND
+        );
       }
       throw err;
     }

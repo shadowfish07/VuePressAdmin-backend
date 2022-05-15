@@ -6,6 +6,7 @@ const {
   generalUserId,
   mockGeneralUsersSession,
 } = require('../../util/utils');
+const { API_ERROR_CODE } = require('../../../app/extend/response');
 
 describe('test/app/controller/shellTask.test.js', () => {
   describe('GET /api/shell-task/:id', () => {
@@ -37,6 +38,7 @@ describe('test/app/controller/shellTask.test.js', () => {
 
       assert(result.statusCode === 200);
       assert(result.body.success);
+      assert(result.body.errorCode === API_ERROR_CODE.SUCCESS);
 
       check(adminUserShellTask, result.body.data);
     });
@@ -50,6 +52,7 @@ describe('test/app/controller/shellTask.test.js', () => {
 
       assert(result.statusCode === 200);
       assert(result.body.success);
+      assert(result.body.errorCode === API_ERROR_CODE.SUCCESS);
 
       check(adminUserShellTask, result.body.data);
     });
@@ -63,6 +66,7 @@ describe('test/app/controller/shellTask.test.js', () => {
 
       assert(result.statusCode === 200);
       assert(result.body.success);
+      assert(result.body.errorCode === API_ERROR_CODE.SUCCESS);
 
       check(generalUserShellTask, result.body.data);
     });
@@ -76,6 +80,7 @@ describe('test/app/controller/shellTask.test.js', () => {
 
       assert(result.statusCode === 200);
       assert(result.body.success);
+      assert(result.body.errorCode === API_ERROR_CODE.SUCCESS);
 
       check(generalUserShellTask, result.body.data);
     });
@@ -89,6 +94,7 @@ describe('test/app/controller/shellTask.test.js', () => {
 
       assert(result.statusCode === 200);
       assert(result.body.success);
+      assert(result.body.errorCode === API_ERROR_CODE.SUCCESS);
 
       check(generalUserShellTask, result.body.data);
     });
@@ -102,6 +108,7 @@ describe('test/app/controller/shellTask.test.js', () => {
 
       assert(result.statusCode === 200);
       assert(result.body.success);
+      assert(result.body.errorCode === API_ERROR_CODE.SUCCESS);
 
       check(generalUserShellTask, result.body.data);
     });
@@ -113,8 +120,9 @@ describe('test/app/controller/shellTask.test.js', () => {
         .get(`/api/shell-task/${adminUserShellTask.id}`)
         .send();
 
-      assert(result.statusCode === 403);
+      assert(result.statusCode === 200);
       assert(!result.body.success);
+      assert(result.body.errorCode === API_ERROR_CODE.NO_PERMISSION);
     });
 
     it('should success when general operating query shell task created by other user by taskId', async () => {
@@ -124,8 +132,9 @@ describe('test/app/controller/shellTask.test.js', () => {
         .get(`/api/shell-task/${adminUserShellTask.taskId}`)
         .send();
 
-      assert(result.statusCode === 403);
+      assert(result.statusCode === 200);
       assert(!result.body.success);
+      assert(result.body.errorCode === API_ERROR_CODE.NO_PERMISSION);
     });
 
     it('should fail when shell task is not exist', async () => {
@@ -135,8 +144,9 @@ describe('test/app/controller/shellTask.test.js', () => {
         .get('/api/shell-task/123456789')
         .send();
 
-      assert(result.statusCode === 404);
+      assert(result.statusCode === 200);
       assert(!result.body.success);
+      assert(result.body.errorCode === API_ERROR_CODE.NOT_FOUND);
     });
   });
 });
