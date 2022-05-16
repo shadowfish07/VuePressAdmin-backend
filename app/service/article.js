@@ -57,6 +57,7 @@ class ArticleService extends Service {
       const fse = require('fs-extra');
 
       const frontMatter = {
+        meta: [{ id }],
         title,
         date: dayjs().format('YYYY-MM-DD'),
         permalink: id.toString(),

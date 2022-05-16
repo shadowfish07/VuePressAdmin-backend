@@ -78,6 +78,7 @@ describe('test/app/controller/article.test.js', () => {
       );
 
       const frontMatter = {
+        meta: [{ id: record.id }],
         title,
         date: dayjs().format('YYYY-MM-DD'),
         permalink: record.id.toString(),
@@ -133,6 +134,7 @@ describe('test/app/controller/article.test.js', () => {
       );
 
       const frontMatter = {
+        meta: [{ id: record.id }],
         title,
         date: dayjs().format('YYYY-MM-DD'),
         permalink: record.id.toString(),
