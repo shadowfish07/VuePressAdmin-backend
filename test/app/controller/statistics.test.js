@@ -5,8 +5,6 @@ const Chance = require('chance');
 const { API_ERROR_CODE } = require('../../../app/extend/response');
 const chance = new Chance();
 const setCookie = require('set-cookie-parser');
-const dayjs = require('dayjs');
-const { generalUserId } = require('../../util/utils');
 
 describe('test/app/controller/statistics.test.js', () => {
   describe('POST /api/statistics', function () {
