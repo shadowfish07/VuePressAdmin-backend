@@ -27,7 +27,7 @@ const initSite = {
 
 class ConfigController extends Controller {
   /**
-   * @api {patch} /config 更新站点配置
+   * @api {patch} /api/config 更新站点配置
    * @apiName 更新站点配置
    * @apiGroup Config
    * @apiDescription 添加或更新给定的站点配置

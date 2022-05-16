@@ -21,6 +21,8 @@ module.exports = (app) => {
     controller.vuepress.reInstallNPMDependence
   );
 
+  router.post('/api/statistics', controller.statistics.recordAccess);
+
   router.post('/api/deploy/local', controller.deploy.switchLocalDeploy);
 
   router.get('/api/shell-task/:id', controller.shellTask.getShellTask);
