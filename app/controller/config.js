@@ -73,7 +73,7 @@ class ConfigController extends Controller {
    * TODO 支持远程仓库连接
    *
    * 返回初始化VuePress的taskId
-   * @api {post} /config/init 初始化站点
+   * @api {post} /api/config/init 初始化站点
    * @apiName 初始化站点
    * @apiGroup Config
    * @apiDescription 执行新站点初始化操作，不允许重复执行，只能在站点未初始化时执行。

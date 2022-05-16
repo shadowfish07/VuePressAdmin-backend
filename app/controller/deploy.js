@@ -12,7 +12,7 @@ const switchLocalDeployRule = {
 
 class DeployController extends Controller {
   /**
-   * @api {post} /deploy/local 开关本地部署服务
+   * @api {post} /api/deploy/local 开关本地部署服务
    * @apiName 开关本地部署服务
    * @apiGroup Deploy
    * @apiDescription 开启后，会启动caddy服务，作为VuePress build内容的文件服务器

@@ -5,7 +5,7 @@ const Controller = require('egg').Controller;
 
 class CookieController extends Controller {
   /**
-   * @api {get} /cookie 登录
+   * @api {get} /api/cookie 登录
    * @apiName 登录
    * @apiGroup Cookie
    * @apiDescription 返回登录态cookie，同时返回用户个人信息

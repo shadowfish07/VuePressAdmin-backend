@@ -5,7 +5,7 @@ const Controller = require('egg').Controller;
 
 class VuepressController extends Controller {
   /**
-   * @api {post} /vuepress/build 执行VuePress build
+   * @api {post} /api/vuepress/build 执行VuePress build
    * @apiName 执行VuePress_build
    * @apiGroup VuePress
    * @apiDescription 执行VuePress的build命令
@@ -36,7 +36,7 @@ class VuepressController extends Controller {
   }
 
   /**
-   * @api {post} /vuepress/re-install-NPM-dependence 重新安装NPM依赖
+   * @api {post} /api/vuepress/re-install-NPM-dependence 重新安装NPM依赖
    * @apiName 重新安装NPM依赖
    * @apiGroup VuePress
    * @apiDescription 可以在出现各种奇怪问题时尝试执行
