@@ -12,3 +12,7 @@ exports.tracer = {
   enable: true,
   package: 'egg-tracer',
 };
+exports.cors = {
+  enable: true,
+  package: 'egg-cors',
+};
