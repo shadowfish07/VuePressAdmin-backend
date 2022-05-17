@@ -47,7 +47,7 @@
     "debug": "egg-bin debug",
     "test": "npm run lint -- --fix && npm run test-local",
     "test-local": "egg-bin test",
-    "test-local-without-shell": "egg-bin test --ignore **/shell/**",
+    "test-local-without-shell": "egg-bin test --ignore test/app/shell/**",
     "cov": "egg-bin cov",
     "lint": "eslint .",
     "ci": "npm run lint && npm run cov",
