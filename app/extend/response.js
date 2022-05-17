@@ -23,7 +23,7 @@ module.exports = {
   /**
    * 返回失败调用数据
    * @param msg {string} 错误信息
-   * @param [errorCode='A0100'] {API_ERROR_CODE} 状态码
+   * @param [errorCode='A0100'] {string} 状态码
    * @returns {boolean}
    */
   returnFail(msg, errorCode = API_ERROR_CODE.BAD_REQUEST) {
@@ -46,7 +46,7 @@ module.exports = {
    * @param success {boolean} 是否成功
    * @param data {any} 返回的数据
    * @param errorMessage {string} 错误信息
-   * @param [errorCode='00000'] {API_ERROR_CODE} 错误码
+   * @param [errorCode='00000'] {string} 错误码
    */
   return(success, data, errorMessage, errorCode = API_ERROR_CODE.SUCCESS) {
     this.status = 200;
