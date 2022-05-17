@@ -73,7 +73,7 @@ class ArticleController extends Controller {
   }
 
   /**
-   * @api {GET} /api/article/:id/readCount 获取指定文章的阅读数
+   * @api {GET} /api/article/:id/read_count 获取指定文章的阅读数
    * @apiName getArticleReadCount
    * @apiGroup Article
    *

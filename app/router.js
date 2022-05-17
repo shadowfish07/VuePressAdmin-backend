@@ -14,7 +14,7 @@ module.exports = (app) => {
   router.post('/api/config/init', controller.config.initSite);
 
   router.resources('article', '/api/article', controller.article);
-  router.get('/api/article/:id/readCount', controller.article.getReadCount);
+  router.get('/api/article/:id/read_count', controller.article.getReadCount);
 
   router.post('/api/vuepress/build', controller.vuepress.build);
   router.post(

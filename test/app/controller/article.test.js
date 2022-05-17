@@ -375,12 +375,12 @@ describe('test/app/controller/article.test.js', () => {
     });
   });
 
-  describe('GET /api/article/:id/readCount', () => {
+  describe('GET /api/article/:id/read_count', () => {
     it('should success', async () => {
       const { id } = await app.factory.create('article');
       let result = await app
         .httpRequest()
-        .get(`/api/article/${id}/readCount`)
+        .get(`/api/article/${id}/read_count`)
         .send();
       assert(result.status === 200);
       assert(result.body.success);
@@ -390,7 +390,7 @@ describe('test/app/controller/article.test.js', () => {
 
       result = await app
         .httpRequest()
-        .get(`/api/article/${id}/readCount`)
+        .get(`/api/article/${id}/read_count`)
         .send();
       assert(result.status === 200);
       assert(result.body.success);
@@ -400,7 +400,7 @@ describe('test/app/controller/article.test.js', () => {
     it('should fail when article not exist', async () => {
       const result = await app
         .httpRequest()
-        .get('/api/article/1/readCount')
+        .get('/api/article/1/read_count')
         .send();
       assert(result.status === 200);
       assert(!result.body.success);

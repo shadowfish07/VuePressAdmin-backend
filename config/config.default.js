@@ -26,7 +26,7 @@ module.exports = (appInfo) => {
           ctx.request.method === 'GET') ||
         (ctx.request.url.startsWith('/api/statistics') &&
           ctx.request.method === 'POST') ||
-        (/\/api\/article\/\d+\/readCount/.test(ctx.request.url) &&
+        (/\/api\/article\/\d+\/read_count/.test(ctx.request.url) &&
           ctx.request.method === 'GET')
       ) {
         return true;
