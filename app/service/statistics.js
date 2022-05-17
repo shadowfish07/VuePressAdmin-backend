@@ -12,13 +12,37 @@ class StatisticsService extends Service {
    *
    * 如果传入了文章ID，还会更新相应文章的阅读数
    *
-   * @param hostname {string} 域名
-   * @param path {string} 访问路径
-   * @param ip {string} 访问IP
-   * @param articleId {number|null} 文章ID
+   * @param body {object} request body
+   * @param body.hostname {string} 域名
+   * @param body.path {string} 访问路径
+   * @param body.ip {string} 访问IP
+   * @param body.articleId {number|null} 文章ID
    * @returns {Promise<void>}
    */
   async recordAccess({ hostname, path, ip, articleId = null }) {
+    const getArticleId = async () => {
+      if (articleId !== null) return articleId;
+
+      let _path = path;
+
+      if (_path.startsWith('/')) {
+        _path = _path.substring(1);
+      }
+      if (_path.endsWith('/')) {
+        _path = _path.substring(0, _path.length - 1);
+      }
+
+      const article = await this.ctx.model.Article.findOne({
+        where: {
+          permalink: _path,
+        },
+      });
+
+      if (article) {
+        return article.id;
+      }
+    };
+
     const isFullRecord = (
       await this.app.model.Config.findOne({
         where: {
@@ -52,13 +76,16 @@ class StatisticsService extends Service {
       });
     }
 
-    // 文章ID传入时，更新相应文章的访问量
-    if (articleId) {
+    // 文章ID传入或path是文章永久链接时，更新相应文章的访问量
+
+    const _articleId = await getArticleId();
+
+    if (_articleId) {
       await this.app.model.Article.increment(
         { readCount: 1 },
         {
           where: {
-            id: articleId,
+            id: _articleId,
           },
         }
       );

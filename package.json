@@ -24,6 +24,7 @@
   },
   "devDependencies": {
     "@release-it/conventional-changelog": "^5.0.0",
+    "@types/jest": "^27.5.1",
     "apidoc": "^0.51.1",
     "autod": "^3.0.1",
     "autod-egg": "^1.1.0",
