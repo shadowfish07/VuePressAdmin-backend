@@ -45,6 +45,8 @@ module.exports = (app) => {
 
     app.model.Article.hasMany(app.model.ArticleHistory);
 
+    app.model.Article.hasMany(app.model.FullVisitHistory);
+
     app.model.Article.belongsTo(app.model.User, {
       as: 'author',
       foreignKey: 'userId',

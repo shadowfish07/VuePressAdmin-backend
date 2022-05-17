@@ -4,7 +4,7 @@ const Controller = require('egg').Controller;
 
 class ShellTaskController extends Controller {
   /**
-   * @api {get} /shell-task/:id 获取指定shell任务执行情况
+   * @api {get} /api/shell-task/:id 获取指定shell任务执行情况
    * @apiName getShellTask
    * @apiGroup ShellTask
    * @apiDescription 管理员可以查看任意任务，普通用户只能看到自己触发的任务

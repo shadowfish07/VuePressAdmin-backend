@@ -4,7 +4,7 @@ const Controller = require('egg').Controller;
 
 class UserController extends Controller {
   /**
-   * @api {get} /user/me 获取当前登录用户个人信息
+   * @api {get} /api/user/me 获取当前登录用户个人信息
    * @apiName 获取当前登录用户个人信息
    * @apiGroup User
    * @apiDescription 返回当前用户个人信息

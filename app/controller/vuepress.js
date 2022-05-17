@@ -5,7 +5,7 @@ const Controller = require('egg').Controller;
 
 class VuepressController extends Controller {
   /**
-   * @api {post} /vuepress/build 执行VuePress build
+   * @api {post} /api/vuepress/build 执行VuePress build
    * @apiName 执行VuePress_build
    * @apiGroup VuePress
    * @apiDescription 执行VuePress的build命令
@@ -18,6 +18,7 @@ class VuepressController extends Controller {
    * @apiSuccess {string} errorMessage 错误信息
    * @apiSuccess {string} traceId 请求id
    *
+   * @apiError (错误码) A0200 需要登录
    * @apiError (错误码) A0201 没有权限
    * @apiError (错误码) A0202 站点未初始化
    */
@@ -36,7 +37,7 @@ class VuepressController extends Controller {
   }
 
   /**
-   * @api {post} /vuepress/re-install-NPM-dependence 重新安装NPM依赖
+   * @api {post} /api/vuepress/re-install-NPM-dependence 重新安装NPM依赖
    * @apiName 重新安装NPM依赖
    * @apiGroup VuePress
    * @apiDescription 可以在出现各种奇怪问题时尝试执行

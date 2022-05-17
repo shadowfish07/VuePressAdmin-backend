@@ -27,7 +27,7 @@ const initSite = {
 
 class ConfigController extends Controller {
   /**
-   * @api {patch} /config 更新站点配置
+   * @api {patch} /api/config 更新站点配置
    * @apiName 更新站点配置
    * @apiGroup Config
    * @apiDescription 添加或更新给定的站点配置
@@ -47,6 +47,7 @@ class ConfigController extends Controller {
    *
    * @apiError (错误码) A0101 传入参数错误
    * @apiError (错误码) A0102 content-type必须是application/json
+   * @apiError (错误码) A0200 需要登录
    * @apiError (错误码) A0201 没有权限
    * @apiError (错误码) A0202 站点未初始化
    */
@@ -73,7 +74,7 @@ class ConfigController extends Controller {
    * TODO 支持远程仓库连接
    *
    * 返回初始化VuePress的taskId
-   * @api {post} /config/init 初始化站点
+   * @api {post} /api/config/init 初始化站点
    * @apiName 初始化站点
    * @apiGroup Config
    * @apiDescription 执行新站点初始化操作，不允许重复执行，只能在站点未初始化时执行。

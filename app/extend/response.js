@@ -52,7 +52,7 @@ module.exports = {
     this.status = 200;
     this.body = {
       success,
-      data: data || null,
+      data: data ?? null,
       errorCode,
       errorMessage: errorMessage || '',
       traceId: this.ctx.traceId,

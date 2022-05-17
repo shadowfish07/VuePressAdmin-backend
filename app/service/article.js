@@ -57,6 +57,7 @@ class ArticleService extends Service {
       const fse = require('fs-extra');
 
       const frontMatter = {
+        meta: [{ id }],
         title,
         date: dayjs().format('YYYY-MM-DD'),
         permalink: id.toString(),
@@ -171,6 +172,27 @@ class ArticleService extends Service {
     const article = await this.app.model.Article.findByPk(id);
     if (!article) throw new NotExistError('文章不存在');
     return article.userId === this.ctx.userId;
+  }
+
+  /**
+   * 获取指定文章阅读量
+   *
+   * @param id {number} 文章id
+   * @returns {Promise<number|boolean>} 文章存在则返回阅读量，否则返回false
+   */
+  async getReadCount(id) {
+    const { readCount } =
+      (await this.app.model.Article.findByPk(id, {
+        attributes: ['readCount'],
+      })) ?? {};
+
+    if (readCount === undefined) {
+      return this.ctx.response.returnFail(
+        '文章不存在',
+        API_ERROR_CODE.NOT_FOUND
+      );
+    }
+    return readCount;
   }
 }
 

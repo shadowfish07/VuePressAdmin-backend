@@ -14,12 +14,15 @@ module.exports = (app) => {
   router.post('/api/config/init', controller.config.initSite);
 
   router.resources('article', '/api/article', controller.article);
+  router.get('/api/article/:id/readCount', controller.article.getReadCount);
 
   router.post('/api/vuepress/build', controller.vuepress.build);
   router.post(
     '/api/vuepress/re-install-NPM-dependence',
     controller.vuepress.reInstallNPMDependence
   );
+
+  router.post('/api/statistics', controller.statistics.recordAccess);
 
   router.post('/api/deploy/local', controller.deploy.switchLocalDeploy);
 
