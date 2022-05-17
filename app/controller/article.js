@@ -26,6 +26,7 @@ class ArticleController extends Controller {
    * @apiSuccess {string} traceId 请求id
    *
    * @apiError (错误码) A0101 传入参数错误
+   * @apiError (错误码) A0200 需要登录
    * @apiError (错误码) A0202 站点未初始化
    */
   async create() {
@@ -55,6 +56,7 @@ class ArticleController extends Controller {
    * @apiSuccess {string} traceId 请求id
    *
    * @apiError (错误码) A0101 传入参数错误
+   * @apiError (错误码) A0200 需要登录
    * @apiError (错误码) A0201 没有权限
    * @apiError (错误码) A0202 站点未初始化
    * @apiError (错误码) A0300 文章不存在
@@ -67,6 +69,32 @@ class ArticleController extends Controller {
     });
     if (updateContentResult) {
       return this.ctx.response.returnSuccess(updateContentResult);
+    }
+  }
+
+  /**
+   * @api {GET} /api/article/:id/readCount 获取指定文章的阅读数
+   * @apiName getArticleReadCount
+   * @apiGroup Article
+   *
+   * @apiParam {number} id 文章ID
+   *
+   * @apiSuccess {Boolean} success 是否成功
+   * @apiSuccess {number} data 文章阅读数
+   * @apiSuccess {string} errorCode 错误码
+   * @apiSuccess {string} errorMessage 错误信息
+   * @apiSuccess {string} traceId 请求id
+   *
+   * @apiError (错误码) A0202 站点未初始化
+   * @apiError (错误码) A0300 文章不存在
+   */
+  async getReadCount() {
+    const result = await this.ctx.service.article.getReadCount(
+      this.ctx.params.id
+    );
+
+    if (result !== false) {
+      return this.ctx.response.returnSuccess(result);
     }
   }
 }

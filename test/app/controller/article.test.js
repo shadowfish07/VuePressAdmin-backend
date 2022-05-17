@@ -374,4 +374,37 @@ describe('test/app/controller/article.test.js', () => {
       assert(result.body.errorCode === API_ERROR_CODE.PARAM_INVALID);
     });
   });
+
+  describe('GET /api/article/:id/readCount', () => {
+    it('should success', async () => {
+      const { id } = await app.factory.create('article');
+      let result = await app
+        .httpRequest()
+        .get(`/api/article/${id}/readCount`)
+        .send();
+      assert(result.status === 200);
+      assert(result.body.success);
+      assert(result.body.data === 0);
+
+      await app.model.Article.update({ readCount: 10 }, { where: { id } });
+
+      result = await app
+        .httpRequest()
+        .get(`/api/article/${id}/readCount`)
+        .send();
+      assert(result.status === 200);
+      assert(result.body.success);
+      assert(result.body.data === 10);
+    });
+
+    it('should fail when article not exist', async () => {
+      const result = await app
+        .httpRequest()
+        .get('/api/article/1/readCount')
+        .send();
+      assert(result.status === 200);
+      assert(!result.body.success);
+      assert(result.body.errorCode === API_ERROR_CODE.NOT_FOUND);
+    });
+  });
 });

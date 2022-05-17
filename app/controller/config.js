@@ -47,6 +47,7 @@ class ConfigController extends Controller {
    *
    * @apiError (错误码) A0101 传入参数错误
    * @apiError (错误码) A0102 content-type必须是application/json
+   * @apiError (错误码) A0200 需要登录
    * @apiError (错误码) A0201 没有权限
    * @apiError (错误码) A0202 站点未初始化
    */

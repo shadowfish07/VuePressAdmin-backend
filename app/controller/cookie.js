@@ -21,8 +21,9 @@ class CookieController extends Controller {
    * @apiSuccess {string} errorMessage 错误信息
    * @apiSuccess {string} traceId 请求id
    *
-   * @apiError A0100 用户名或密码错误
-   * @apiError A0101 传入参数错误
+   * @apiError (错误码) A0100 用户名或密码错误
+   * @apiError (错误码) A0101 传入参数错误
+   * @apiError (错误码) A0200 需要登录
    */
   async getCookie() {
     const { ctx } = this;
