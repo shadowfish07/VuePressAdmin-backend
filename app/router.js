@@ -23,6 +23,10 @@ module.exports = (app) => {
   );
 
   router.post('/api/statistics', controller.statistics.recordAccess);
+  router.get(
+    '/api/statistics/visit_count',
+    controller.statistics.getVisitCount
+  );
 
   router.post('/api/deploy/local', controller.deploy.switchLocalDeploy);
 

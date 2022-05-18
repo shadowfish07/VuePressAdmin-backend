@@ -34,6 +34,40 @@ class StatisticsController extends Controller {
     await this.ctx.service.statistics.recordAccess(this.ctx.request.body);
     return this.ctx.response.returnSuccess();
   }
+
+  /**
+   * @api {get} /api/statistics/visit_count 获取全站访问次数
+   * @apiName getVisitCount
+   * @apiGroup Statistics
+   * @apiDescription 获取全站访问次数，按小时分组
+   *
+   * @apiPermission 普通用户
+   *
+   * @apiQuery {Number} [year] 查询年份，不填则返回所有数据
+   * @apiQuery {Number} [month] 仅year指定时有效，查询月份，不填则返回当年所有数据
+   * @apiQuery {Number} [day] 仅month指定时有效，查询天，不填则返回当月所有数据
+   * @apiQuery {Boolean} [detail] 是否返回详细数据，默认false
+   *
+   * @apiSuccess (Success 200 详细数据-detail:true) {Boolean} success 是否成功
+   * @apiUse VisitCountDetail
+   * @apiSuccess (Success 200 详细数据-detail:true) {string} errorCode 错误码
+   * @apiSuccess (Success 200 详细数据-detail:true) {string} errorMessage 错误信息
+   * @apiSuccess (Success 200 详细数据-detail:true) {string} traceId 请求id
+   *
+   * @apiSuccess (Success 200 仅数值-默认) {Boolean} success 是否成功
+   * @apiUse VisitCount
+   * @apiSuccess (Success 200 仅数值-默认) {string} errorCode 错误码
+   * @apiSuccess (Success 200 仅数值-默认) {string} errorMessage 错误信息
+   * @apiSuccess (Success 200 仅数值-默认) {string} traceId 请求id
+   *
+   * @apiError (错误码) A0200 需要登录
+   * @apiError (错误码) A0202 站点未初始化
+   */
+  async getVisitCount() {
+    return this.ctx.response.returnSuccess(
+      await this.ctx.service.statistics.getVisitCount(this.ctx.request.query)
+    );
+  }
 }
 
 module.exports = StatisticsController;

@@ -22,3 +22,20 @@
  * @apiSuccess {number} data.timeConsumed shell任务执行耗时（执行结束后才会有值）
  * @apiSuccess {String} data.userId shell任务执行者id
  */
+
+/**
+ * @apiDefine VisitCountDetail
+ * @apiSuccess (Success 200 详细数据-detail:true) {Object[]} data 详细数据，以时分区
+ * @apiSuccess (Success 200 详细数据-detail:true) {number} data.pv 该小时新增pv
+ * @apiSuccess (Success 200 详细数据-detail:true) {number} data.uv 该小时新增uv
+ * @apiSuccess (Success 200 详细数据-detail:true) {number} data.year
+ * @apiSuccess (Success 200 详细数据-detail:true) {number} data.month
+ * @apiSuccess (Success 200 详细数据-detail:true) {number} data.day
+ */
+
+/**
+ * @apiDefine VisitCount
+ * @apiSuccess (Success 200 仅数值-默认) {Object} data 仅数值，筛选条件下的总数据
+ * @apiSuccess (Success 200 仅数值-默认) {number} data.pv 筛选条件下总pv
+ * @apiSuccess (Success 200 仅数值-默认) {number} data.uv 筛选条件下总uv
+ */
