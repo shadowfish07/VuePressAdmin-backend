@@ -14,7 +14,8 @@ class ArticleService extends Service {
    *
    * 默认永久链接为文章id
    *
-   * @param title {string} 文章标题，文件名
+   * @param body {object} request body
+   * @param body.title {string} 文章标题，文件名
    * @returns {Promise<number>} 文章id
    */
   async createNewArticle({ title }) {
@@ -114,9 +115,10 @@ class ArticleService extends Service {
    * 更新文章内容和标题，会进行权限判断
    *
    * 管理员或文章原作者有权限
-   * @param id {number} 文章id
-   * @param content {string} 文章内容
-   * @param title {string} 文章标题
+   * @param body {object} request body
+   * @param body.id {number} 文章id
+   * @param body.content {string} 文章内容
+   * @param body.title {string} 文章标题
    * @returns {Promise<boolean>} 是否更新成功
    */
   async updateContent({ id, content, title }) {

@@ -5,8 +5,9 @@ const Service = require('egg').Service;
 class shellTaskService extends Service {
   /**
    * 查询指定的shellTask
-   * @param id {string|number} shellTask id或taskId
-   * @returns {Promise<Model<shellTask>|boolean>} 成功则返回shellTask，失败则返回false
+   * @param body {object} request body
+   * @param body.id {string|number} shellTask id或taskId
+   * @returns {Promise<object|boolean>} 成功则返回shellTask，失败则返回false
    */
   async getShellTask({ id }) {
     try {
@@ -35,7 +36,7 @@ class shellTaskService extends Service {
    * 管理员或shellTask任务发起者有权限
    *
    * @param id {string|number} shellTask id或taskId
-   * @returns {Promise<boolean | Model<shellTask>>} 若无权限返回false，有权限返回shellTask
+   * @returns {Promise<boolean | object>} 若无权限返回false，有权限返回shellTask
    * @throws {NotExistError} shellTask不存在
    */
   async canQueryShellTask(id) {

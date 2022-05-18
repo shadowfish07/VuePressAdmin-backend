@@ -73,7 +73,8 @@ class ConfigService extends Service {
 
   /**
    * 启动新线程异步初始化vuepress目录，若已存在vuepress则不初始化
-   * @param type {string} 初始化模板类型，目前支持VuePressTemplate-recoX
+   * @param obj {object} 初始化参数
+   * @param obj.type {string} 初始化模板类型，目前支持VuePressTemplate-recoX
    * @permission admin
    * @returns {Promise<boolean|string>} 成功则返回taskId,失败则返回false
    */

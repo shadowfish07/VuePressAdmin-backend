@@ -73,6 +73,12 @@ module.exports = (appInfo) => {
     storage: 'database/database.sqlite',
   };
 
+  config.cors = {
+    origin: process.env.siteHostname || 'http://localhost:8080',
+    allowMethods: 'GET,HEAD,PUT,POST,DELETE,PATCH',
+    credentials: true,
+  };
+
   // add your user config here
   const userConfig = {
     // myAppName: 'egg',
