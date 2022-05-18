@@ -48,4 +48,15 @@ module.exports = (app) => {
       userId: options.userId || adminUserId,
     };
   });
+
+  factory.define('visitCount', app.model.VisitCount, (options) => {
+    return {
+      year: options.year || factory.chance('integer', { min: 2077, max: 2080 }),
+      month: options.month || factory.chance('integer', { min: 1, max: 12 }),
+      day: options.day || factory.chance('integer', { min: 1, max: 28 }),
+      hour: options.hour || factory.chance('integer', { min: 0, max: 23 }),
+      pv: options.pv || factory.chance('integer', { min: 0, max: 100 }),
+      uv: options.uv || factory.chance('integer', { min: 0, max: 100 }),
+    };
+  });
 };

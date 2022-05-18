@@ -118,6 +118,74 @@ class StatisticsService extends Service {
       await thisHourRecord.save();
     }
   }
+
+  /**
+   * @typedef {object} VisitCountDetail
+   * @property {number} pv
+   * @property {number} uv
+   * @property {number} year
+   * @property {number} month
+   * @property {number} day
+   */
+
+  /**
+   * @typedef {object} VisitCount
+   * @property {number} pv
+   * @property {number} uv
+   */
+
+  /**
+   * 获取全站访问次数，按小时分组
+   *
+   * @param query {object} request query
+   * @param query.year {number} 查询年份，不填则返回所有数据
+   * @param query.month {number} 仅year指定时有效，查询月份，不填则返回当年所有数据
+   * @param query.day {number} 仅month指定时有效，查询天，不填则返回当月所有数据
+   * @param query.detail {boolean} 是否返回详细数据，默认false
+   *
+   * @returns {Promise<VisitCountDetail[]|VisitCount>} detail真时，返回详细以时间分区的数据;否则返回阶段总pv\uv数
+   */
+  async getVisitCount({ year, month, day, detail }) {
+    if (!year) {
+      month = undefined;
+      day = undefined;
+    }
+    if (!month) {
+      day = undefined;
+    }
+
+    const where = {};
+    if (year) where.year = year;
+    if (month) where.month = month;
+    if (day) where.day = day;
+
+    if (detail) {
+      return await this.app.model.VisitCount.findAll({
+        where,
+        attributes: { exclude: ['id'] },
+      });
+    }
+
+    return await this.app.model.VisitCount.findOne({
+      where,
+      attributes: [
+        [
+          this.app.model.Sequelize.fn(
+            'sum',
+            this.app.model.Sequelize.col('pv')
+          ),
+          'pv',
+        ],
+        [
+          this.app.model.Sequelize.fn(
+            'sum',
+            this.app.model.Sequelize.col('uv')
+          ),
+          'uv',
+        ],
+      ],
+    });
+  }
 }
 
 module.exports = StatisticsService;
