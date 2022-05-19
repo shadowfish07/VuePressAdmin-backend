@@ -55,7 +55,7 @@
     "cov": "egg-bin cov",
     "lint": "eslint .",
     "ci": "npm run lint && npm run cov",
-    "ci-without-shell": "npm run lint && egg-bin cov --ignore **/shell/**",
+    "ci-without-shell": "npm run lint && egg-bin cov --ignore test/app/shell/**",
     "autod": "autod",
     "commit": "git add . && cz",
     "apidoc": "apidoc -i app -o apidoc",
