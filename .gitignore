@@ -19,3 +19,4 @@ apidoc/
 .env
 Caddyfile
 release.md
+.history/

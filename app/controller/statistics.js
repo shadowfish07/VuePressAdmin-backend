@@ -5,7 +5,6 @@ const Controller = require('egg').Controller;
 const recordAccessRule = {
   hostname: { type: 'string', required: true, allowEmpty: false },
   path: { type: 'string', required: true, allowEmpty: false },
-  ip: { type: 'string', required: true, allowEmpty: false },
   articleId: { type: 'number', required: false },
 };
 
@@ -18,7 +17,6 @@ class StatisticsController extends Controller {
    *
    * @apiBody {String} hostname 域名
    * @apiBody {String} path 访问路径
-   * @apiBody {String} ip 访问者IP
    * @apiBody {Number} [articleId] 文章ID，如果是文章页面，则填写文章ID。
    *
    * @apiSuccess {Boolean} success 是否成功
@@ -31,7 +29,10 @@ class StatisticsController extends Controller {
    */
   async recordAccess() {
     this.ctx.validate(recordAccessRule);
-    await this.ctx.service.statistics.recordAccess(this.ctx.request.body);
+    await this.ctx.service.statistics.recordAccess({
+      ...this.ctx.request.body,
+      ip: this.ctx.request.ip,
+    });
     return this.ctx.response.returnSuccess();
   }
 

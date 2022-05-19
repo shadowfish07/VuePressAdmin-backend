@@ -320,7 +320,6 @@ describe('test/app/controller/statistics.test.js', () => {
       assert(fullRecord.length === 1);
       assert(fullRecord[0].hostname === hostname);
       assert(fullRecord[0].path === path);
-      assert(fullRecord[0].ip === ip);
       assert(fullRecord[0].uvCookie);
     });
     it('should update visitCount, article and fullVisitHistory and not count UV when fullVisitHistoryRecord is true and has uv cookie', async () => {
@@ -378,7 +377,6 @@ describe('test/app/controller/statistics.test.js', () => {
       assert(fullRecord.length === 1);
       assert(fullRecord[0].hostname === hostname);
       assert(fullRecord[0].path === path);
-      assert(fullRecord[0].ip === ip);
       assert((fullRecord[0].uvCookie = uvCookieValue));
     });
   });
