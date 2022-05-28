@@ -97,6 +97,32 @@ class ArticleController extends Controller {
       return this.ctx.response.returnSuccess(result);
     }
   }
+
+  /**
+   * @api {GET} /api/article/count 获取文章总数
+   * @apiName getArticleReadCount
+   * @apiGroup Article
+   *
+   * @apiDescription 过滤条件不支持时，返回0
+   *
+   * @apiPermission 普通用户
+   *
+   * @apiQuery {string="publish_and_draft","publish","draft","deleted"} filter=publish_and_draft 过滤条件
+   *
+   * @apiSuccess {Boolean} success 是否成功
+   * @apiSuccess {number} data 文章数
+   * @apiSuccess {string} errorCode 错误码
+   * @apiSuccess {string} errorMessage 错误信息
+   * @apiSuccess {string} traceId 请求id
+   *
+   * @apiError (错误码) A0200 需要登录
+   * @apiError (错误码) A0202 站点未初始化
+   */
+  async getArticleCount() {
+    return this.ctx.response.returnSuccess(
+      await this.service.article.getArticleCount(this.ctx.request.query)
+    );
+  }
 }
 
 module.exports = ArticleController;

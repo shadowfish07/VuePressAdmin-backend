@@ -25,7 +25,7 @@ module.exports = (app) => {
         type: INTEGER,
         set(value) {
           // 强制转换为0/1
-          this.setDataValue(transferToBoolean(value) ? 1 : 0);
+          this.setDataValue('isDraft', transferToBoolean(value) ? 1 : 0);
         },
       }, // 是否为草稿 0: false, 1: true
       permalink: STRING, // 文章永久链接
