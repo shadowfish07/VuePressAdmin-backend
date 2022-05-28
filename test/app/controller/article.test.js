@@ -407,4 +407,74 @@ describe('test/app/controller/article.test.js', () => {
       assert(result.body.errorCode === API_ERROR_CODE.NOT_FOUND);
     });
   });
+
+  describe('GET /api/article/count', () => {
+    beforeEach(async () => {
+      mockGeneralUsersSession(app);
+      await app.factory.createMany('article', 3);
+      await app.factory.createMany('article', 7, {
+        isDraft: 1,
+      });
+      await app.factory.createMany('article', 13, {
+        deletedAt: new Date(),
+      });
+    });
+
+    it('should return publish + draft count when do not pass filter', async function () {
+      const result = await app.httpRequest().get('/api/article/count').send();
+      assert(result.status === 200);
+      assert(result.body.success);
+      assert(result.body.data === 10);
+    });
+
+    it('should return publish + draft count when pass publish_and_draft', async function () {
+      const result = await app
+        .httpRequest()
+        .get('/api/article/count?filter=publish_and_draft')
+        .send();
+      assert(result.status === 200);
+      assert(result.body.success);
+      assert(result.body.data === 10);
+    });
+
+    it('should return publish count when pass publish', async function () {
+      const result = await app
+        .httpRequest()
+        .get('/api/article/count?filter=publish')
+        .send();
+      assert(result.status === 200);
+      assert(result.body.success);
+      assert(result.body.data === 3);
+    });
+
+    it('should return draft count when pass draft', async function () {
+      const result = await app
+        .httpRequest()
+        .get('/api/article/count?filter=draft')
+        .send();
+      assert(result.status === 200);
+      assert(result.body.success);
+      assert(result.body.data === 7);
+    });
+
+    it('should return deleted count when pass deleted', async function () {
+      const result = await app
+        .httpRequest()
+        .get('/api/article/count?filter=deleted')
+        .send();
+      assert(result.status === 200);
+      assert(result.body.success);
+      assert(result.body.data === 13);
+    });
+
+    it('should return 0 when pass unsupported filter', async function () {
+      const result = await app
+        .httpRequest()
+        .get('/api/article/count?filter=unsupported')
+        .send();
+      assert(result.status === 200);
+      assert(result.body.success);
+      assert(result.body.data === 0);
+    });
+  });
 });

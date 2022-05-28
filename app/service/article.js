@@ -196,6 +196,49 @@ class ArticleService extends Service {
     }
     return readCount;
   }
+
+  /**
+   * 获取文章数量
+   * @param query {object} request query
+   * @param [query.filter=publish_and_draft] {string} 筛选条件，支持publish_and_draft, publish, draft,deleted。若为其他值，返回0
+   * @returns {number} 文章数量
+   */
+  async getArticleCount({ filter = 'publish_and_draft' }) {
+    const { Op } = require('sequelize');
+
+    if (filter === 'deleted') {
+      return await this.app.model.Article.count({
+        where: {
+          deletedAt: {
+            [Op.not]: null,
+          },
+        },
+        paranoid: false,
+      });
+    }
+
+    if (filter === 'draft') {
+      return await this.app.model.Article.count({
+        where: {
+          isDraft: 1,
+        },
+      });
+    }
+
+    if (filter === 'publish') {
+      return await this.app.model.Article.count({
+        where: {
+          isDraft: 0,
+        },
+      });
+    }
+
+    if (filter === 'publish_and_draft') {
+      return await this.app.model.Article.count();
+    }
+
+    return 0;
+  }
 }
 
 module.exports = ArticleService;
