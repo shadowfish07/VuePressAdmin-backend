@@ -39,3 +39,22 @@
  * @apiSuccess (Success 200 仅数值-默认) {number} data.pv 筛选条件下总pv
  * @apiSuccess (Success 200 仅数值-默认) {number} data.uv 筛选条件下总uv
  */
+
+/**
+ * @apiDefine ArticleList
+ * @apiSuccess {Object} data 数据
+ * @apiSuccess {number} data.current 当前页数
+ * @apiSuccess {number} data.total 总页数
+ * @apiSuccess {number} data.pageSize 每页数据量
+ * @apiSuccess {Object[]} data.list 文章列表
+ * @apiSuccess {number} data.list.id 文章ID
+ * @apiSuccess {string} data.list.title 标题
+ * @apiSuccess {number} data.list.readCount 阅读量
+ * @apiSuccess {string} data.list.lastModifiedAt 最后修改时间
+ * @apiSuccess {string} data.list.createdAt 创建时间
+ * @apiSuccess {number=0,1,2} data.list.state 状态，0-草稿，1-发布，2-删除
+ * @apiSuccess {string} data.list.permalink 文章URL
+ * @apiSuccess {Object} data.list.author 作者
+ * @apiSuccess {number} data.list.author.id 作者ID
+ * @apiSuccess {string} data.list.author.username 作者用户名
+ */

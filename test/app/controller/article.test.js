@@ -477,4 +477,204 @@ describe('test/app/controller/article.test.js', () => {
       assert(result.body.data === 0);
     });
   });
+
+  describe('GET /api/article', () => {
+    const defaultPage = 1;
+    const defaultPageSize = 10;
+    let fakeArticles;
+    const publishArticleCount = 21;
+    const draftArticleCount = 7;
+    const deletedArticleCount = 13;
+    const checkArticle = (returnArticle, expectedState) => {
+      returnArticle.forEach((item) => {
+        assert(item.id);
+        assert(item.title);
+        assert(item.readCount || item.readCount === 0);
+        assert(item.lastModifiedAt);
+        assert(item.createdAt);
+        assert(item.permalink);
+        assert(item.author.id);
+        assert(item.author.username);
+
+        if (expectedState !== undefined) {
+          assert(item.state === expectedState);
+        } else {
+          assert(item.state !== 2);
+        }
+
+        const fakeArticle = fakeArticles.find(
+          (fakeArticle) => fakeArticle.id === item.id
+        );
+        if (fakeArticle.deletedAt) {
+          assert(item.state === 2);
+        } else if (fakeArticle.isDraft) {
+          assert(item.state === 0);
+        } else {
+          assert(item.state === 1);
+        }
+      });
+    };
+    beforeEach(async () => {
+      mockGeneralUsersSession(app);
+      fakeArticles = [
+        ...(await app.factory.createMany('article', publishArticleCount)),
+        ...(await app.factory.createMany('article', draftArticleCount, {
+          isDraft: 1,
+        })),
+        ...(await app.factory.createMany('article', deletedArticleCount, {
+          deletedAt: new Date(),
+        })),
+      ];
+    });
+    it('should return 10 articles at page 1 when pass no params', async function () {
+      const result = await app.httpRequest().get('/api/article').send();
+
+      assert(result.statusCode === 200);
+      assert(result.body.success);
+
+      assert(result.body.data.current === defaultPage);
+      assert(result.body.data.list.length === defaultPageSize);
+      assert(
+        result.body.data.total === publishArticleCount + draftArticleCount
+      );
+      assert(result.body.data.pageSize === defaultPageSize);
+
+      checkArticle(result.body.data.list);
+    });
+    it('should return specified number of articles at page 1 when pass pageSize', async function () {
+      const pageSize = 3;
+      const result = await app
+        .httpRequest()
+        .get(`/api/article?pageSize=${pageSize}`)
+        .send();
+
+      assert(result.statusCode === 200);
+      assert(result.body.success);
+
+      assert(result.body.data.current === defaultPage);
+      assert(result.body.data.list.length === pageSize);
+      assert(
+        result.body.data.total === publishArticleCount + draftArticleCount
+      );
+      assert(result.body.data.pageSize === pageSize);
+
+      checkArticle(result.body.data.list);
+    });
+    it('should return 10 articles at specified page when pass currentPage', async function () {
+      const currentPage = 2;
+      const result = await app
+        .httpRequest()
+        .get(`/api/article?currentPage=${currentPage}`)
+        .send();
+
+      assert(result.statusCode === 200);
+      assert(result.body.success);
+
+      assert(result.body.data.current === currentPage);
+      assert(result.body.data.list.length === defaultPageSize);
+      assert(
+        result.body.data.total === publishArticleCount + draftArticleCount
+      );
+      assert(result.body.data.pageSize === defaultPageSize);
+
+      checkArticle(result.body.data.list);
+    });
+    it('should return specified number of articles at specified page when pass currentPage and pageSize', async function () {
+      const currentPage = 2;
+      const pageSize = 3;
+      const result = await app
+        .httpRequest()
+        .get(`/api/article?currentPage=${currentPage}&pageSize=${pageSize}`)
+        .send();
+
+      assert(result.statusCode === 200);
+      assert(result.body.success);
+
+      assert(result.body.data.current === currentPage);
+      assert(result.body.data.list.length === pageSize);
+      assert(
+        result.body.data.total === publishArticleCount + draftArticleCount
+      );
+      assert(result.body.data.pageSize === pageSize);
+
+      checkArticle(result.body.data.list);
+    });
+    it('should return only draft articles when pass state = 2', async function () {
+      const result = await app.httpRequest().get('/api/article?state=2').send();
+
+      assert(result.statusCode === 200);
+      assert(result.body.success);
+
+      assert(result.body.data.current === defaultPage);
+      assert(result.body.data.list.length === draftArticleCount);
+      assert(result.body.data.total === draftArticleCount);
+      assert(result.body.data.pageSize === defaultPageSize);
+
+      checkArticle(result.body.data.list, 0);
+    });
+    it('should return only deleted articles when pass state = 3', async function () {
+      const result = await app.httpRequest().get('/api/article?state=3').send();
+
+      assert(result.statusCode === 200);
+      assert(result.body.success);
+
+      assert(result.body.data.current === defaultPage);
+      assert(result.body.data.list.length === defaultPageSize);
+      assert(result.body.data.total === deletedArticleCount);
+      assert(result.body.data.pageSize === defaultPageSize);
+
+      checkArticle(result.body.data.list, 2);
+    });
+    it('should return only publish articles when pass state = 1', async function () {
+      const result = await app.httpRequest().get('/api/article?state=1').send();
+
+      assert(result.statusCode === 200);
+      assert(result.body.success);
+
+      assert(result.body.data.current === defaultPage);
+      assert(result.body.data.list.length === defaultPageSize);
+      assert(result.body.data.total === publishArticleCount);
+      assert(result.body.data.pageSize === defaultPageSize);
+
+      checkArticle(result.body.data.list, 1);
+    });
+    it('should return publish and draft articles when pass state that is not supported', async function () {
+      const result = await app
+        .httpRequest()
+        .get('/api/article?state=99')
+        .send();
+
+      assert(result.statusCode === 200);
+      assert(result.body.success);
+
+      assert(result.body.data.current === defaultPage);
+      assert(result.body.data.list.length === defaultPageSize);
+      assert(
+        result.body.data.total === publishArticleCount + draftArticleCount
+      );
+      assert(result.body.data.pageSize === defaultPageSize);
+
+      checkArticle(result.body.data.list);
+    });
+    it('should return error when pass invalid currentPage', async function () {
+      const result = await app
+        .httpRequest()
+        .get('/api/article?currentPage=aaa')
+        .send();
+
+      assert(result.statusCode === 200);
+      assert(result.body.success === false);
+      assert(result.body.errorCode === API_ERROR_CODE.PARAM_INVALID);
+    });
+    it('should return error when pass invalid pageSize', async function () {
+      const result = await app
+        .httpRequest()
+        .get('/api/article?pageSize=aaa')
+        .send();
+
+      assert(result.statusCode === 200);
+      assert(result.body.success === false);
+      assert(result.body.errorCode === API_ERROR_CODE.PARAM_INVALID);
+    });
+  });
 });

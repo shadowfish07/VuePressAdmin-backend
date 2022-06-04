@@ -1,5 +1,7 @@
 'use strict';
 
+const { API_ERROR_CODE } = require('../extend/response');
+
 const Controller = require('egg').Controller;
 const createRule = {
   title: { type: 'string', required: true },
@@ -122,6 +124,42 @@ class ArticleController extends Controller {
     return this.ctx.response.returnSuccess(
       await this.service.article.getArticleCount(this.ctx.request.query)
     );
+  }
+
+  /**
+   * @api {GET} /api/article 获取文章列表
+   * @apiName getArticles
+   * @apiGroup Article
+   *
+   * @apiDescription
+   *
+   * @apiPermission 普通用户
+   *
+   * @apiQuery {number} [currentPage=1] 查询页码，默认1
+   * @apiQuery {number} [pageSize=10] 每页条数，默认10
+   * @apiQuery {number=0,1,2,3} [query.state] 筛选条件。0：已发布+草稿，1：已发布，2：草稿，3：已删除。其他值视为0
+   *
+   * @apiSuccess {Boolean} success 是否成功
+   * @apiUse ArticleList
+   * @apiSuccess {string} errorCode 错误码
+   * @apiSuccess {string} errorMessage 错误信息
+   * @apiSuccess {string} traceId 请求id
+   *
+   * @apiError (错误码) A0200 需要登录
+   * @apiError (错误码) A0202 站点未初始化
+   */
+  async index() {
+    try {
+      const result = await this.ctx.service.article.getArticleList(
+        this.ctx.request.query
+      );
+      return this.ctx.response.returnSuccess(result);
+    } catch (error) {
+      return this.ctx.response.returnFail(
+        error.message,
+        API_ERROR_CODE.PARAM_INVALID
+      );
+    }
   }
 }
 
