@@ -2,6 +2,7 @@
 const Service = require('egg').Service;
 const dayjs = require('dayjs');
 const NotExistError = require('../Error/NotExistError');
+const ParamsError = require('../Error/ParamsError');
 const { API_ERROR_CODE } = require('../extend/response');
 
 class ArticleService extends Service {
@@ -238,6 +239,76 @@ class ArticleService extends Service {
     }
 
     return 0;
+  }
+
+  /**
+   * 获取文章数量
+   * @param query {object} request query
+   * @param [query.state=0,1,2,3] {number} 筛选条件。0：已发布+草稿，1：已发布，2：草稿，3：已删除。其他值视为0
+   * @returns {number} 文章数量
+   */
+  async getArticleList({ currentPage = 1, pageSize = 10, state = 0 }) {
+    const { Op, fn, col } = require('sequelize');
+
+    currentPage = parseInt(currentPage, 10);
+    pageSize = parseInt(pageSize, 10);
+    state = parseInt(state, 10);
+
+    if (isNaN(currentPage) || isNaN(pageSize)) {
+      throw new ParamsError('参数错误');
+    }
+
+    if ([0, 1, 2, 3].includes(state) === -1) {
+      state = 0;
+    }
+
+    const paranoid = state !== 3;
+    const where = {};
+
+    if (state === 3) {
+      where.deletedAt = {
+        [Op.not]: null,
+      };
+    } else if (state === 1) {
+      where.isDraft = 0;
+    } else if (state === 2) {
+      where.isDraft = 1;
+    }
+
+    const offset = (currentPage - 1) * pageSize;
+    const { count, rows } = await this.app.model.Article.findAndCountAll({
+      offset,
+      limit: pageSize,
+      where,
+      paranoid,
+      attributes: [
+        'title',
+        'readCount',
+        'createdAt',
+        'lastModifiedAt',
+        'userId',
+        'id',
+        'permalink',
+        [
+          fn('IIF', col('deleted_at'), 2, fn('IIF', col('is_draft'), 0, 1)),
+          'state',
+        ],
+      ],
+      include: [
+        {
+          model: this.app.model.User,
+          as: 'author',
+          attributes: ['id', 'username'],
+        },
+      ],
+    });
+
+    return {
+      total: count,
+      pageSize,
+      current: currentPage,
+      list: rows,
+    };
   }
 }
 

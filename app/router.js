@@ -8,8 +8,6 @@ module.exports = (app) => {
   router.get('/api/cookie', controller.cookie.getCookie);
   router.get('/api/user/me', controller.user.me);
 
-  // router.resources("config", "/api/config", controller.config);
-
   router.patch('/api/config', controller.config.patch);
   router.post('/api/config/init', controller.config.initSite);
 
@@ -32,6 +30,4 @@ module.exports = (app) => {
   router.post('/api/deploy/local', controller.deploy.switchLocalDeploy);
 
   router.get('/api/shell-task/:id', controller.shellTask.getShellTask);
-
-  // router.resources("users", "/api/users", controller.users);
 };
