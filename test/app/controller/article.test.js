@@ -14,6 +14,8 @@ const { gitToJs } = require('git-parse');
 const dayjs = require('dayjs');
 const fse = require('fs-extra');
 const { API_ERROR_CODE } = require('../../../app/extend/response');
+const Chance = require('chance');
+const chance = new Chance();
 
 describe('test/app/controller/article.test.js', () => {
   before(async () => {
@@ -151,7 +153,7 @@ describe('test/app/controller/article.test.js', () => {
       assert(commitsPromise[0].filesAdded.length === 1);
       assert(
         commitsPromise[0].filesAdded[0].path ===
-          app.config.vuepress.draftPath + '/' + title + '.md'
+        app.config.vuepress.draftPath + '/' + title + '.md'
       );
 
       // 清理文件
@@ -173,11 +175,15 @@ describe('test/app/controller/article.test.js', () => {
     it('should update article when admin user operating and change both title and content', async () => {
       const oldTitle = 'old title';
       const oldContent = 'old content';
-      await app.factory.create('article', {
-        title: oldTitle,
-        content: oldContent,
-        lastModifiedAt: dayjs().subtract(1, 'year').toDate(),
-      });
+      await app.factory.create(
+        'article',
+        {},
+        {
+          title: oldTitle,
+          content: oldContent,
+          lastModifiedAt: dayjs().subtract(1, 'year').toDate(),
+        }
+      );
       mockAdminUserSession(app);
       const title = 'new article';
       const content = 'new content';
@@ -210,12 +216,16 @@ describe('test/app/controller/article.test.js', () => {
     it('should update article when general user operating and change both title and content', async () => {
       const oldTitle = 'old title';
       const oldContent = 'old content';
-      await app.factory.create('article', {
-        title: oldTitle,
-        content: oldContent,
-        userId: generalUserId,
-        lastModifiedAt: dayjs().subtract(1, 'year').toDate(),
-      });
+      await app.factory.create(
+        'article',
+        {},
+        {
+          title: oldTitle,
+          content: oldContent,
+          userId: generalUserId,
+          lastModifiedAt: dayjs().subtract(1, 'year').toDate(),
+        }
+      );
       mockGeneralUsersSession(app);
       const title = 'new article';
       const content = 'new content';
@@ -248,12 +258,16 @@ describe('test/app/controller/article.test.js', () => {
     it("should success when admin user change other user's article", async () => {
       const oldTitle = 'old title';
       const oldContent = 'old content';
-      await app.factory.create('article', {
-        title: oldTitle,
-        content: oldContent,
-        lastModifiedAt: dayjs().subtract(1, 'year').toDate(),
-        userId: generalUserId,
-      });
+      await app.factory.create(
+        'article',
+        {},
+        {
+          title: oldTitle,
+          content: oldContent,
+          lastModifiedAt: dayjs().subtract(1, 'year').toDate(),
+          userId: generalUserId,
+        }
+      );
       mockAdminUserSession(app);
       const title = 'new article';
       const content = 'new content';
@@ -286,19 +300,27 @@ describe('test/app/controller/article.test.js', () => {
     it("should fail when general user tries to change other user's article", async () => {
       const oldTitle = 'old title';
       const oldContent = 'old content';
-      await app.factory.create('article', {
-        title: oldTitle,
-        content: oldContent,
-        lastModifiedAt: dayjs().subtract(1, 'year').toDate(),
-        userId: adminUserId,
-      });
+      await app.factory.create(
+        'article',
+        {},
+        {
+          title: oldTitle,
+          content: oldContent,
+          lastModifiedAt: dayjs().subtract(1, 'year').toDate(),
+          userId: adminUserId,
+        }
+      );
       const { id: newUserId } = await app.factory.create('user');
-      await app.factory.create('article', {
-        title: oldTitle,
-        content: oldContent,
-        lastModifiedAt: dayjs().subtract(1, 'year').toDate(),
-        userId: newUserId,
-      });
+      await app.factory.create(
+        'article',
+        {},
+        {
+          title: oldTitle,
+          content: oldContent,
+          lastModifiedAt: dayjs().subtract(1, 'year').toDate(),
+          userId: newUserId,
+        }
+      );
 
       mockGeneralUsersSession(app);
       const title = 'new article';
@@ -675,6 +697,210 @@ describe('test/app/controller/article.test.js', () => {
       assert(result.statusCode === 200);
       assert(result.body.success === false);
       assert(result.body.errorCode === API_ERROR_CODE.PARAM_INVALID);
+    });
+  });
+
+  describe('POST /api/article/:id/publish', () => {
+    async function checkUnModifiedGit () {
+      const commitsPromise = await gitToJs(app.config.vuepress.path);
+      assert(commitsPromise.length === 0);
+    }
+    async function checkModifiedGit (article) {
+      // 检查git
+      const commitsPromise = await gitToJs(app.config.vuepress.path);
+
+      assert(commitsPromise.length === 1);
+      assert(commitsPromise[0].message === `[docs:${article.id}] 新建文章`);
+      assert(commitsPromise[0].filesAdded.length === 2);
+      assert(
+        commitsPromise[0].filesAdded[0].path === 'docs/' + article.title + '.md'
+      );
+    }
+
+    afterEach(() => {
+      fse.removeSync(app.config.vuepress.path);
+      shelljs.exec('git init ' + app.config.vuepress.path);
+      shelljs.exec(
+        `git -C ${app.config.vuepress.path} config user.name "VuePressAdmin egg-mock"`
+      );
+      shelljs.exec(
+        `git -C ${app.config.vuepress.path} config user.email "egg-mock@VuePressAdmin.com"`
+      );
+    });
+
+    const prepareArticle = async (isPublished) => {
+      const fakeArticle = await app.factory.create(
+        'article',
+        {},
+        {
+          title: chance.word(),
+          content: chance.word(),
+          userId: generalUserId,
+          lastModifiedAt: dayjs().subtract(1, 'year').toDate(),
+          isDraft: isPublished ? 0 : 1,
+        }
+      );
+
+      const frontMatter = {
+        meta: [{ id: fakeArticle.id }],
+        title: fakeArticle.title,
+        date: dayjs().format('YYYY-MM-DD'),
+        permalink: fakeArticle.id.toString(),
+      };
+      const content = '---\n' + JSON.stringify(frontMatter) + '\n---\n\n';
+
+      if (isPublished) {
+        fse.outputFileSync(fakeArticle.filePath, content);
+      } else {
+        shelljs.config.verbose = true;
+        // 模拟草稿文件的git记录
+        fse.outputFileSync(
+          path.join(
+            app.config.vuepress.draftFullPath,
+            fakeArticle.filePath.split(path.sep).pop()
+          ),
+          content
+        );
+        shelljs.exec(`git -C "${app.config.vuepress.path}" add .`);
+        shelljs.exec(
+          `git -C "${app.config.vuepress.path}" commit -m "[docs:${fakeArticle.id}] 新建文章"`
+        );
+      }
+
+      return fakeArticle;
+    };
+
+    it('should success when general user publish his own published article', async function () {
+      const fakeArticle = await prepareArticle(true);
+      mockGeneralUsersSession(app);
+
+      const result = await app
+        .httpRequest()
+        .post(`/api/article/${fakeArticle.id}/publish`)
+        .send();
+
+      assert(result.statusCode === 200);
+      assert(result.body.success);
+
+      assert(fse.existsSync(fakeArticle.filePath));
+
+      await checkUnModifiedGit(fakeArticle);
+    });
+    it('should success when general user publish his own unpublished article', async function () {
+      const fakeArticle = await prepareArticle(false);
+
+      mockGeneralUsersSession(app);
+
+      const result = await app
+        .httpRequest()
+        .post(`/api/article/${fakeArticle.id}/publish`)
+        .send();
+
+      assert(result.statusCode === 200);
+      assert(result.body.success);
+
+      assert(!fse.existsSync(fakeArticle.filePath));
+
+      const article = await app.model.Article.findByPk(fakeArticle.id);
+      assert(article.isDraft === 0);
+      assert(!!article.filePath && article.filePath !== fakeArticle.filePath);
+      assert(fse.existsSync(article.filePath));
+    });
+    it('should success when admin user publish his own published article', async function () {
+      const fakeArticle = await prepareArticle(true);
+      mockAdminUserSession(app);
+
+      const result = await app
+        .httpRequest()
+        .post(`/api/article/${fakeArticle.id}/publish`)
+        .send();
+
+      assert(result.statusCode === 200);
+      assert(result.body.success);
+
+      assert(fse.existsSync(fakeArticle.filePath));
+
+      await checkUnModifiedGit(fakeArticle);
+    });
+    it('should success when admin user publish his own unpublished article', async function () {
+      const fakeArticle = await prepareArticle(false);
+
+      mockAdminUserSession(app);
+
+      const result = await app
+        .httpRequest()
+        .post(`/api/article/${fakeArticle.id}/publish`)
+        .send();
+
+      assert(result.statusCode === 200);
+      assert(result.body.success);
+
+      assert(!fse.existsSync(fakeArticle.filePath));
+
+      const article = await app.model.Article.findByPk(fakeArticle.id);
+      assert(article.isDraft === 0);
+      assert(!!article.filePath && article.filePath !== fakeArticle.filePath);
+      assert(fse.existsSync(article.filePath));
+
+      checkModifiedGit(article);
+    });
+    it('should not allowed when general user publish other\'s article', async function () {
+
+      const { id: newUserId } = await app.factory.create('user');
+      const fakeArticle = await app.factory.create(
+        'article',
+        {},
+        {
+          title: chance.word(),
+          content: chance.word(),
+          lastModifiedAt: dayjs().subtract(1, 'year').toDate(),
+          userId: newUserId,
+        }
+      );
+      mockGeneralUsersSession(app);
+
+      const result = await app
+        .httpRequest()
+        .post(`/api/article/${fakeArticle.id}/publish`)
+        .send();
+
+      assert(result.statusCode === 200);
+      assert(!result.body.success);
+      assert(result.body.errorCode === API_ERROR_CODE.NO_PERMISSION);
+    });
+    it('should fail when article is not exist', async function () {
+      mockGeneralUsersSession(app);
+
+      const result = await app
+        .httpRequest()
+        .post('/api/article/1/publish')
+        .send();
+
+      assert(result.statusCode === 200);
+      assert(!result.body.success);
+      assert(result.body.errorCode === API_ERROR_CODE.NOT_FOUND);
+    });
+    it('should fail when article is deleted', async function () {
+      const fakeArticle = await app.factory.create(
+        'article',
+        {},
+        {
+          title: chance.word(),
+          content: chance.word(),
+          lastModifiedAt: dayjs().subtract(1, 'year').toDate(),
+          deletedAt: new Date(),
+        }
+      );
+      mockAdminUserSession(app);
+
+      const result = await app
+        .httpRequest()
+        .post(`/api/article/${fakeArticle.id}/publish`)
+        .send();
+
+      assert(result.statusCode === 200);
+      assert(!result.body.success);
+      assert(result.body.errorCode === API_ERROR_CODE.NOT_FOUND);
     });
   });
 });

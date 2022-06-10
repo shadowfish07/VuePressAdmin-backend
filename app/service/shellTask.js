@@ -45,7 +45,7 @@ class shellTaskService extends Service {
         [this.app.Sequelize.Op.or]: [{ id }, { taskId: id }],
       },
     });
-    if (!shellTask) throw new NotExistError('文章不存在');
+    if (!shellTask) throw new NotExistError('文章不存在或已删除');
     if (
       this.ctx.session.role !== 'admin' &&
       shellTask.userId !== this.ctx.userId

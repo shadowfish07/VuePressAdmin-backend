@@ -2,6 +2,7 @@
 const { factory } = require('factory-girl');
 const { adminUserId } = require('./util/utils');
 const { v4: uuidv4 } = require('uuid');
+const path = require('path');
 
 module.exports = (app) => {
   // 可以通过 app.factory 访问 factory 实例
@@ -17,26 +18,55 @@ module.exports = (app) => {
   });
 
   // 定义 user 和默认数据
-  factory.define('article', app.model.Article, (options) => {
-    return {
-      title: options.title || factory.chance('sentence', { words: 3 }),
-      content: options.content || '',
-      filePath: factory.sequence(
-        'Article.filePath',
-        (n) => `/docs/article_${n}.md`
-      ),
-      readCount: options.readCount || 0,
-      createAt: options.createAt || new Date(),
-      lastModifiedAt: options.lastModifiedAt || new Date(),
-      isDraft: options.isDraft || 0,
-      permalink:
-        options.permalink ||
-        factory.sequence('Article.permalink', (n) => `${n}`),
-      userId: options.userId || adminUserId,
-      deletedById: options.deletedById || null,
-      deletedAt: options.deletedAt || null,
-    };
-  });
+  factory.define(
+    'article',
+    app.model.Article,
+    (options) => {
+      return {
+        title: options.title || factory.chance('sentence', { words: 3 }),
+        content: options.content || '',
+        filePath: factory.sequence('Article.filePath', (n) =>
+          path.join(
+            app.config.vuepress.path,
+            options.isDraft
+              ? app.config.vuepress.draftPath
+              : app.config.vuepress.docsPath,
+            `article_${n}.md`
+          )
+        ),
+        readCount: options.readCount || 0,
+        createAt: options.createAt || new Date(),
+        lastModifiedAt: options.lastModifiedAt || new Date(),
+        isDraft: options.isDraft || 0,
+        permalink:
+          options.permalink ||
+          factory.sequence('Article.permalink', (n) => `${n}`),
+        userId: options.userId || adminUserId,
+        deletedById: options.deletedById || null,
+        deletedAt: options.deletedAt || null,
+      };
+    },
+    {
+      afterCreate: (model, attr) => {
+        if (!attr.generateFile) {
+          return model;
+        }
+        const fse = require('fs-extra');
+        const dayjs = require('dayjs');
+
+        const frontMatter = {
+          meta: [{ id: model.id }],
+          title: model.title,
+          date: dayjs().format('YYYY-MM-DD'),
+          permalink: model.id.toString(),
+        };
+        const content = '---\n' + JSON.stringify(frontMatter) + '\n---\n\n';
+        fse.outputFileSync(model.filePath, content);
+
+        return model;
+      },
+    }
+  );
 
   factory.define('shellTask', app.model.ShellTask, (options) => {
     return {

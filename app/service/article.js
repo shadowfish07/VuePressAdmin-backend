@@ -19,7 +19,7 @@ class ArticleService extends Service {
    * @param body.title {string} 文章标题，文件名
    * @returns {Promise<number>} 文章id
    */
-  async createNewArticle({ title }) {
+  async createNewArticle ({ title }) {
     const { ctx } = this;
 
     const filePath = getFilePath.call(this, title);
@@ -42,7 +42,7 @@ class ArticleService extends Service {
      * @param title {string} 文章标题
      * @returns {string} 文件路径
      */
-    function getFilePath(title) {
+    function getFilePath (title) {
       const documentRoot = this.app.config.vuepress.draftFullPath;
       const suffix = '.md';
       return ctx.helper.getAvailableFilePath(documentRoot, title, suffix);
@@ -55,7 +55,7 @@ class ArticleService extends Service {
      * @param filePath {string} 文件路径
      * @param id {number} 文章id
      */
-    async function createNewFile(title, filePath, id) {
+    async function createNewFile (title, filePath, id) {
       const fse = require('fs-extra');
 
       const frontMatter = {
@@ -76,7 +76,7 @@ class ArticleService extends Service {
      * @param filePath {string} 文件路径
      * @returns {Promise<number>} 文章id
      */
-    async function updateDatabase(filePath) {
+    async function updateDatabase (filePath) {
       const record = await this.app.model.Article.create({
         title,
         filePath,
@@ -95,7 +95,7 @@ class ArticleService extends Service {
      * @param articleId {number} 文章id
      * @returns {Promise<unknown>}
      */
-    async function gitCommit(filePath, articleId) {
+    async function gitCommit (filePath, articleId) {
       return new Promise(async (resolve, reject) => {
         await ctx.startShellTask(
           'commitArticle',
@@ -122,9 +122,9 @@ class ArticleService extends Service {
    * @param body.title {string} 文章标题
    * @returns {Promise<boolean>} 是否更新成功
    */
-  async updateContent({ id, content, title }) {
+  async updateContent ({ id, content, title }) {
     try {
-      if (!(await this.canUpdateContent(id))) {
+      if (!(await this.canEditArticle(id))) {
         return this.ctx.response.returnFail(
           '无权限修改文章',
           API_ERROR_CODE.NO_PERMISSION
@@ -133,7 +133,7 @@ class ArticleService extends Service {
     } catch (err) {
       if (err instanceof NotExistError) {
         return this.ctx.response.returnFail(
-          '文章不存在',
+          '文章不存在或已删除',
           API_ERROR_CODE.NOT_FOUND
         );
       }
@@ -155,25 +155,28 @@ class ArticleService extends Service {
 
     await article.save();
 
+    // TODO 更新文件
+
     return true;
   }
 
   /**
-   * 检查当前用户是否有权限修改文章内容/标题
+   * 检查当前用户是否有权限修改文章内容/标题，发布文章
+   *
+   * 已删除的文章不能修改
    *
    * 管理员或文章原作者有权限
    *
    * @param id {number} 文章id
-   * @returns {Promise<boolean>}
-   * @throws {NotExistError} 文章不存在
+   * @returns {Promise<boolean>} 是否有权限
+   * @throws {NotExistError} 文章不存在或已删除
    */
-  async canUpdateContent(id) {
+  async canEditArticle (id) {
+    const article = await this.app.model.Article.findByPk(id);
+    if (!article) throw new NotExistError('文章不存在或已删除');
     if (this.ctx.session.role === 'admin') {
       return true;
     }
-
-    const article = await this.app.model.Article.findByPk(id);
-    if (!article) throw new NotExistError('文章不存在');
     return article.userId === this.ctx.userId;
   }
 
@@ -183,7 +186,7 @@ class ArticleService extends Service {
    * @param id {number} 文章id
    * @returns {Promise<number|boolean>} 文章存在则返回阅读量，否则返回false
    */
-  async getReadCount(id) {
+  async getReadCount (id) {
     const { readCount } =
       (await this.app.model.Article.findByPk(id, {
         attributes: ['readCount'],
@@ -191,7 +194,7 @@ class ArticleService extends Service {
 
     if (readCount === undefined) {
       return this.ctx.response.returnFail(
-        '文章不存在',
+        '文章不存在或已删除',
         API_ERROR_CODE.NOT_FOUND
       );
     }
@@ -204,7 +207,7 @@ class ArticleService extends Service {
    * @param [query.filter=publish_and_draft] {string} 筛选条件，支持publish_and_draft, publish, draft,deleted。若为其他值，返回0
    * @returns {number} 文章数量
    */
-  async getArticleCount({ filter = 'publish_and_draft' }) {
+  async getArticleCount ({ filter = 'publish_and_draft' }) {
     const { Op } = require('sequelize');
 
     if (filter === 'deleted') {
@@ -247,7 +250,7 @@ class ArticleService extends Service {
    * @param [query.state=0,1,2,3] {number} 筛选条件。0：已发布+草稿，1：已发布，2：草稿，3：已删除。其他值视为0
    * @returns {number} 文章数量
    */
-  async getArticleList({ currentPage = 1, pageSize = 10, state = 0 }) {
+  async getArticleList ({ currentPage = 1, pageSize = 10, state = 0 }) {
     const { Op, fn, col } = require('sequelize');
 
     currentPage = parseInt(currentPage, 10);
@@ -309,6 +312,90 @@ class ArticleService extends Service {
       current: currentPage,
       list: rows,
     };
+  }
+
+  /**
+   * 发布文章，已发布的文章直接返回成功
+   *
+   * @param {number} id 文章ID
+   * @returns {Promise<boolean>} 是否发布成功
+   */
+  async publishArticle (id) {
+    const { ctx } = this;
+    try {
+      if (!(await this.canEditArticle(id))) {
+        return this.ctx.response.returnFail(
+          '无权限发布文章',
+          API_ERROR_CODE.NO_PERMISSION
+        );
+      }
+    } catch (err) {
+      if (err instanceof NotExistError) {
+        return this.ctx.response.returnFail(
+          '文章不存在或已删除',
+          API_ERROR_CODE.NOT_FOUND
+        );
+      }
+      throw err;
+    }
+
+    const article = await this.app.model.Article.findByPk(id);
+
+    if (!article.isDraft) {
+      return this.ctx.response.returnSuccess();
+    }
+
+    const filePath = getFilePath.call(this, article.title);
+
+    const fs = require('fs-extra');
+
+    fs.moveSync(article.filePath, filePath);
+
+    await gitCommit(id, article.filePath, filePath);
+
+    article.filePath = filePath;
+
+    article.isDraft = 0;
+
+    await article.save();
+
+    return true;
+
+    /**
+     * 获取可用文件路径
+     *
+     * @param title {string} 文章标题
+     * @returns {string} 文件路径
+     */
+    function getFilePath (title) {
+      const documentRoot = this.app.config.vuepress.docsFullPath;
+      const suffix = '.md';
+      return ctx.helper.getAvailableFilePath(documentRoot, title, suffix);
+    }
+
+    /**
+     * 执行git commit，等待shell执行完毕
+     *
+     * @param oldPath {string} 文件移动前路径
+     * @param newPath {string} 文件移动后路径
+     * @param articleId {number} 文章id
+     * @returns {Promise<unknown>}
+     */
+    async function gitCommit (articleId, oldPath, newPath) {
+      return new Promise(async (resolve, reject) => {
+        await ctx.startShellTask(
+          'commitChangingArticleState',
+          [articleId, oldPath, newPath],
+          (isFailed) => {
+            if (!isFailed) {
+              resolve();
+            } else {
+              reject(new Error('Git commit failed'));
+            }
+          }
+        );
+      });
+    }
   }
 }
 

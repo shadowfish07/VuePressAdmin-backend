@@ -52,14 +52,16 @@ module.exports = (appInfo) => {
     },
   };
 
-  const rootPath = process.cwd() + '/vuepress';
+  const path = require('path');
+
+  const rootPath = path.join(process.cwd(), 'vuepress');
 
   exports.vuepress = {
     path: rootPath,
     docsPath: 'docs',
     draftPath: '_draft',
-    docsFullPath: rootPath + '/docs',
-    draftFullPath: rootPath + '/_draft',
+    docsFullPath: path.join(rootPath, 'docs'),
+    draftFullPath: path.join(rootPath, '_draft'),
   };
 
   config.security = {

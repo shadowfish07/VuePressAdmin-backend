@@ -61,7 +61,7 @@ class ArticleController extends Controller {
    * @apiError (错误码) A0200 需要登录
    * @apiError (错误码) A0201 没有权限
    * @apiError (错误码) A0202 站点未初始化
-   * @apiError (错误码) A0300 文章不存在
+   * @apiError (错误码) A0300 文章不存在或已删除
    */
   async update() {
     this.ctx.validate(updateContentRule);
@@ -88,7 +88,7 @@ class ArticleController extends Controller {
    * @apiSuccess {string} traceId 请求id
    *
    * @apiError (错误码) A0202 站点未初始化
-   * @apiError (错误码) A0300 文章不存在
+   * @apiError (错误码) A0300 文章不存在或已删除
    */
   async getReadCount() {
     const result = await this.ctx.service.article.getReadCount(
@@ -159,6 +159,37 @@ class ArticleController extends Controller {
         error.message,
         API_ERROR_CODE.PARAM_INVALID
       );
+    }
+  }
+
+  /**
+   * @api {POST} /api/article/:id/publish 发布文章
+   * @apiName changeArticleState
+   * @apiGroup Article
+   *
+   * @apiDescription 若已发布，也返回成功。若已删除，则失败。普通用户只能发布自己的文章，管理员可以发布所有文章。
+   *
+   * @apiPermission 普通用户
+   *
+   * @apiParam {number} id 文章ID
+   *
+   * @apiSuccess {Boolean} success 是否成功
+   * @apiSuccess {null} data 无
+   * @apiSuccess {string} errorCode 错误码
+   * @apiSuccess {string} errorMessage 错误信息
+   * @apiSuccess {string} traceId 请求id
+   *
+   * @apiError (错误码) A0200 需要登录
+   * @apiError (错误码) A0201 没有权限
+   * @apiError (错误码) A0202 站点未初始化
+   * @apiError (错误码) A0300 文章不存在或已删除
+   */
+  async publishArticle() {
+    const result = await this.ctx.service.article.publishArticle(
+      this.ctx.params.id
+    );
+    if (result) {
+      this.ctx.response.returnSuccess();
     }
   }
 }

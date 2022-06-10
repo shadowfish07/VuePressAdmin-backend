@@ -59,9 +59,6 @@ module.exports = {
    * @returns {string} 可用文件路径，包含根目录、文件名、后缀
    */
   getAvailableFilePath(documentRoot, originFilename, suffix) {
-    // const documentRoot = process.cwd() + '/vuepress/docs/';
-    // const suffix = '.md';
-
     // 如果文件名以/开头，就去掉/
     while (originFilename.startsWith('/')) {
       originFilename = originFilename.substring(1);
