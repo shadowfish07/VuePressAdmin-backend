@@ -61,6 +61,8 @@ module.exports = {
           return '使用模板VuePressTemplate-recoX初始化VuePress';
         case 'commitArticle':
           return 'git commit 文章';
+        case 'commitChangingArticleState':
+          return 'git commit 更新文章状态';
         case 'buildVuePress':
           return 'build VuePress';
         case 'reInstallNPMDependence':
@@ -82,6 +84,8 @@ module.exports = {
         case 'initRecoXTemplate':
           return true;
         case 'commitArticle':
+          return true;
+        case 'commitChangingArticleState':
           return true;
         default:
           return false;
