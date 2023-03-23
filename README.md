@@ -2,6 +2,8 @@
 
 **该项目目前还处于早期开发阶段。**
 
+**最近参加工作，还在忙另一个毕业设计，这个项目目前正在搁置QAQ**  
+
 这是VuePressAdmin的**后端**代码仓库。
 
 ![GitHub](https://img.shields.io/github/license/shadowfish07/VuePressAdmin-backend)
